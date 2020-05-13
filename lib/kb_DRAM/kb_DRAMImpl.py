@@ -60,6 +60,7 @@ class kb_DRAM:
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
 
         # set DRAM database locations
+        print('\n'.join(os.listdir('/data/')))
         print('\n'.join(os.listdir('/data/DRAM_databases/')))
         import_config('/data/DRAM_databases/CONFIG')
         print_database_locations()
