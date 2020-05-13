@@ -60,6 +60,7 @@ elif [ "${1}" = "init" ] ; then
                                          --etc_module_database_loc etc_mdoule_database.20200508.tsv \
                                          --function_heatmap_form_loc function_heatmap_form.20200508.tsv \
                                          --amg_database_loc amg_database.20200508.tsv
+    DRAM-setup.py export_config --output_file CONFIG
     cd /data
     touch __READY__
   else

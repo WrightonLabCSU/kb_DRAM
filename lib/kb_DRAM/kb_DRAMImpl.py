@@ -5,6 +5,7 @@ import os
 import pandas as pd
 
 from mag_annotator.annotate_bins import annotate_bins
+from mag_annotator.database_processing import import_config
 
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.AssemblyUtilClient import AssemblyUtil
@@ -57,6 +58,9 @@ class kb_DRAM:
         # setup params
         min_contig_size = params['min_contig_size']
         output_dir = 'DRAM_annos'
+
+        # set DRAM database locations
+        import_config('/data/DRAM_databases/CONFIG')
 
         # get files
         assembly_util = AssemblyUtil(self.callback_url)
