@@ -2,7 +2,7 @@ module-name:
     kb_DRAM
 
 module-description:
-    A KBase module
+    A KBase module for annotating bacterial and archaeal (meta)genomes and viruses with DRAM
 
 service-language:
     python
