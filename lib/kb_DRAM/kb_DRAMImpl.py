@@ -57,7 +57,7 @@ class kb_DRAM:
         #BEGIN run_kb_dram_annotate
         # setup params
         min_contig_size = params['min_contig_size']
-        output_dir = 'DRAM_annos'
+        output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
 
         # set DRAM database locations
         import_config('/data/DRAM_databases/CONFIG')
@@ -74,15 +74,15 @@ class kb_DRAM:
         # report_data = {'objects_created': [{'ref': new_ref, 'description': 'TSV of annotations'}]}
         # kbase_report = KBaseReport(self.callback_url)
         # report = kbase_report.create({'report': report_data, 'workspace_name': workspace_name})
-        report_data = {'text_message': "Sucessfully annotated:\n%s" % annotations}
-        kbase_report = KBaseReport(self.callback_url)
-        report = kbase_report.create({'report': report_data, 'workspace_name': params['workspace_name']})
-
-        # set output
+        message = "Sucessfully annotated:\n%s" % annotations.head().to_csv(sep='\t')
         report = KBaseReport(self.callback_url)
-        report_info = report.create({'report': report['ref'], 'workspace_name': params['workspace_name']})
-        output = {'report_ref': report_info['ref'],
-                  'report_name': report_info['name']}
+        report_info = report.create({'report': {'objects_created': [],
+                                                'text_message': message},
+                                     'workspace_name': params['workspace_name']})
+        output = {
+            'report_name': report_info['name'],
+            'report_ref': report_info['ref'],
+        }
         #END run_kb_dram_annotate
 
         # At some point might do deeper type checking...
