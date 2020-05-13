@@ -8,8 +8,8 @@ MAINTAINER michael.t.shaffer@colostate.edu
 
 # Install miniconda
 RUN apt-get update && \
-    apt-get install wget && \
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+    apt-get install wget -q && \
+    wget -nv https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
     sh Miniconda3-latest-Linux-x86_64.sh -b -p /root/miniconda
 # Add miniconda bin to path permanently in the container
 ENV PATH=/root/miniconda/bin:$PATH
@@ -18,10 +18,10 @@ RUN echo $(which conda) && \
     conda config --set always_yes yes && \
     conda config --add channels bioconda && \
     conda config --add channels conda-forge && \
-    conda update conda
+    conda update -q conda
 # Install dependencies and DRAM
-RUN conda install pandas scikit-bio prodigal "mmseqs2!=10.6d92c" hmmer "trnascan-se >=2" sqlalchemy barrnap "altair >=4" openpyxl networkx ruby parallel wget nose coverage && \
-    pip install DRAM-bio jsonrpcbase
+RUN conda install -q pandas scikit-bio prodigal "mmseqs2!=10.6d92c" hmmer "trnascan-se >=2" sqlalchemy barrnap "altair >=4" openpyxl networkx ruby parallel wget nose coverage && \
+    pip install -q DRAM-bio jsonrpcbase
 # -----------------------------------------
 
 COPY ./ /kb/module

@@ -20,12 +20,12 @@ elif [ "${1}" = "async" ] ; then
 elif [ "${1}" = "init" ] ; then
   echo "Initialize module"
   # Could be this to setup?
-  pip install zenodo_get
+  pip install -q zenodo_get
   cd /data
   mkdir DRAM_databases
   cd DRAM_databases
   zenodo_get -w files_to_download.txt -r 3820858 # This is the deposition number for the databases dated 5/8/2020
-  wget -i files_to_download.txt
+  wget -i files_to_download.txt -nv
   ls
   if md5sum -c md5sums.txt ; then
 #  	DRAM-setup.py set_database_locations --kofam_hmm_loc /data/DRAM_databases/kofam_profiles.hmm \
@@ -60,6 +60,7 @@ elif [ "${1}" = "init" ] ; then
                                          --etc_module_database_loc etc_mdoule_database.20200508.tsv \
                                          --function_heatmap_form_loc function_heatmap_form.20200508.tsv \
                                          --amg_database_loc amg_database.20200508.tsv
+    cd /data
     touch __READY__
   else
     echo "Init failed"
