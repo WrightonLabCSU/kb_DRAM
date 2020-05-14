@@ -24,7 +24,7 @@ elif [ "${1}" = "init" ] ; then
   cd /data
   mkdir DRAM_databases
   cd DRAM_databases
-  zenodo_get -w files_to_download.txt -r 3820858 # This is the deposition number for the databases dated 5/8/2020
+  zenodo_get -w files_to_download.txt -r 3827510 # This is the deposition number for the databases dated 5/8/2020
   wget -i files_to_download.txt -nv
   ls
   if md5sum -c md5sums.txt ; then
