@@ -9,6 +9,7 @@ from mag_annotator.database_processing import import_config, print_database_loca
 
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.AssemblyUtilClient import AssemblyUtil
+from installed_clients.DataFileUtilClient import DataFileUtil
 #END_HEADER
 
 
@@ -28,8 +29,8 @@ class kb_DRAM:
     # the latter method is running.
     ######################################### noqa
     VERSION = "0.0.1"
-    GIT_URL = ""
-    GIT_COMMIT_HASH = ""
+    GIT_URL = "https://github.com/shafferm/kb_DRAM.git"
+    GIT_COMMIT_HASH = "b5d6128257f9ad7039a1c63239d6504686aae5ff"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -45,6 +46,7 @@ class kb_DRAM:
         #END_CONSTRUCTOR
         pass
 
+
     def run_kb_dram_annotate(self, ctx, params):
         """
         This example function accepts any number of parameters and returns results in a KBaseReport
@@ -59,32 +61,46 @@ class kb_DRAM:
         min_contig_size = params['min_contig_size']
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
 
+        # create Util objects
+        assembly_util = AssemblyUtil(self.callback_url)
+        datafile_util = DataFileUtil(params['SDK_CALLBACK_URL'])
+        report_util = KBaseReport(self.callback_url)
+
         # set DRAM database locations
-        print('\n'.join(os.listdir('/data/')))
-        print('\n'.join(os.listdir('/data/DRAM_databases/')))
         import_config('/data/DRAM_databases/CONFIG')
         print_database_locations()
 
         # get files
-        assembly_util = AssemblyUtil(self.callback_url)
         fasta_loc = assembly_util.get_assembly_as_fasta({'ref': params['assembly_input_ref']})['path']
 
-        annotate_bins(fasta_loc, output_dir, min_contig_size, low_mem_mode=True)
+        annotate_bins(fasta_loc, output_dir, min_contig_size, low_mem_mode=True, threads=4)
         annotations = pd.read_csv(os.path.join(output_dir, 'annotations.tsv'), sep='\t', index_col=0)
 
         # generate report
-        # report_data = {'objects_created': [{'ref': new_ref, 'description': 'TSV of annotations'}]}
-        # kbase_report = KBaseReport(self.callback_url)
-        # report = kbase_report.create({'report': report_data, 'workspace_name': workspace_name})
-        message = "Sucessfully annotated:\n%s" % annotations.head().to_csv(sep='\t')
-        report = KBaseReport(self.callback_url)
-        report_info = report.create({'report': {'objects_created': [],
-                                                'text_message': message},
-                                     'workspace_name': params['workspace_name']})
+        html_file = os.path.join(output_dir, 'index.html')
+        with open(html_file, 'w') as f:
+            f.write(annotations.to_html())
+        report_shock_id = datafile_util.file_to_shock({
+            'file_path': output_dir,
+            'pack': 'zip'
+        })['shock_id']
+        html_report = [{
+            'shock_id': report_shock_id,
+            'name': os.path.basename(html_file),
+            'label': os.path.basename(html_file),
+            'description': 'HTML summary report for DRAM annotations.'
+        }]
+        report = report_util.create_extended_report({'message': 'Here are the results from your DRAM run.',
+                                                     'workspace_name': params['workspace_name'],
+                                                     'html_links': html_report,
+                                                     'direct_html_link_index': 0,
+                                                     'objects_created': [],
+                                                     })
         output = {
-            'report_name': report_info['name'],
-            'report_ref': report_info['ref'],
+            'report_name': report['name'],
+            'report_ref': report['ref'],
         }
+
         #END run_kb_dram_annotate
 
         # At some point might do deeper type checking...
@@ -150,7 +166,6 @@ class kb_DRAM:
                              'output is not type dict as required.')
         # return the results
         return [output]
-
     def status(self, ctx):
         #BEGIN_STATUS
         returnVal = {'state': "OK",
