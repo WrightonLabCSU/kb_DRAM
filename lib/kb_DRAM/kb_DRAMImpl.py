@@ -60,6 +60,8 @@ class kb_DRAM:
         # setup params
         min_contig_size = params['min_contig_size']
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
+        output_files = []
+        output_objects = []
 
         # create Util objects
         assembly_util = AssemblyUtil(self.callback_url)
@@ -73,8 +75,16 @@ class kb_DRAM:
         # get files
         fasta_loc = assembly_util.get_assembly_as_fasta({'ref': params['assembly_input_ref']})['path']
 
-        annotate_bins(fasta_loc, output_dir, min_contig_size, low_mem_mode=True, threads=4)
-        annotations = pd.read_csv(os.path.join(output_dir, 'annotations.tsv'), sep='\t', index_col=0)
+        annotate_bins(fasta_loc, output_dir, min_contig_size, low_mem_mode=True, keep_tmp_dir=False, threads=4,
+                      verbose=False)
+        annotations_tsv_loc = os.path.join(output_dir, 'annotations.tsv')
+        output_files.append({
+            'path': annotations_tsv_loc,
+            'name': 'annotations.tsv',
+            'label': 'annotations.tsv',
+            'description': 'DRAM annotations in a tab separate table format'
+        })
+        annotations = pd.read_csv(annotations_tsv_loc, sep='\t', index_col=0)
 
         # generate report
         html_file = os.path.join(output_dir, 'index.html')
@@ -94,7 +104,8 @@ class kb_DRAM:
                                                      'workspace_name': params['workspace_name'],
                                                      'html_links': html_report,
                                                      'direct_html_link_index': 0,
-                                                     'objects_created': [],
+                                                     'file_links': output_files,
+                                                     'objects_created': output_objects,
                                                      })
         output = {
             'report_name': report['name'],
