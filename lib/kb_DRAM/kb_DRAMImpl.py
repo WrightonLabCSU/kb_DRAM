@@ -10,6 +10,8 @@ from mag_annotator.database_processing import import_config, print_database_loca
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.DataFileUtilClient import DataFileUtil
+
+# TODO: Fix no pfam annotations bug
 #END_HEADER
 
 
@@ -30,7 +32,7 @@ class kb_DRAM:
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/shafferm/kb_DRAM.git"
-    GIT_COMMIT_HASH = "b5d6128257f9ad7039a1c63239d6504686aae5ff"
+    GIT_COMMIT_HASH = "5eb40b83c26e9a74bf254e2ac223dc1072fce493"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -75,16 +77,30 @@ class kb_DRAM:
         # get files
         fasta_loc = assembly_util.get_assembly_as_fasta({'ref': params['assembly_input_ref']})['path']
 
+        # run DRAM
         annotate_bins(fasta_loc, output_dir, min_contig_size, low_mem_mode=True, keep_tmp_dir=False, threads=4,
                       verbose=False)
         annotations_tsv_loc = os.path.join(output_dir, 'annotations.tsv')
+        annotations = pd.read_csv(annotations_tsv_loc, sep='\t', index_col=0)
+
+        # get output files
         output_files.append({
             'path': annotations_tsv_loc,
             'name': 'annotations.tsv',
             'label': 'annotations.tsv',
             'description': 'DRAM annotations in a tab separate table format'
         })
-        annotations = pd.read_csv(annotations_tsv_loc, sep='\t', index_col=0)
+
+        # make output objects
+        save_object_params = {
+            'id': params['workspace_id'],
+            'objects': [{
+                'type': 'kb_DRAM.DRAM_annotations_table',
+                'data': annotations,
+                'name': 'DRAM_annotations'
+            }]
+        }
+        output_objects.append(datafile_util.save_objects(save_object_params)[0])
 
         # generate report
         html_file = os.path.join(output_dir, 'index.html')
