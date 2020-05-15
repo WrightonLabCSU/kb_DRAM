@@ -63,7 +63,7 @@ class kb_DRAM:
 
         # create Util objects
         assembly_util = AssemblyUtil(self.callback_url)
-        datafile_util = DataFileUtil(params['SDK_CALLBACK_URL'])
+        datafile_util = DataFileUtil(self.callback_url)
         report_util = KBaseReport(self.callback_url)
 
         # set DRAM database locations
