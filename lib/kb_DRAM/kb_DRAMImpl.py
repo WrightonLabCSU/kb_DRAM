@@ -96,8 +96,8 @@ class kb_DRAM:
             'id': params['workspace_id'],
             'objects': [{
                 'type': 'kb_DRAM.DRAM_annotations_table',
-                'data': annotations,
-                'name': 'DRAM_annotations'
+                'data': annotations.to_json(),
+                'name': 'DRAM_annotation_table'
             }]
         }
         output_objects.append(datafile_util.save_objects(save_object_params)[0])
