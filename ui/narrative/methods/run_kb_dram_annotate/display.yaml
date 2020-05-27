@@ -31,9 +31,9 @@ suggestions:
 parameters :
     assembly_input_ref :
         ui-name : |
-            Assembly/genome to be annotated
+            Assembly/assembly set to be annotated
         short-hint : |
-            The contig collection you want to annotate with DRAM
+            The contig collection(s) you want to annotate with DRAM
     min_contig_size :
         ui-name: |
             Minimum contig length

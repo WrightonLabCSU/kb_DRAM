@@ -30,7 +30,7 @@ class kb_DRAM:
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/shafferm/kb_DRAM.git"
-    GIT_COMMIT_HASH = "b5d6128257f9ad7039a1c63239d6504686aae5ff"
+    GIT_COMMIT_HASH = "5eb40b83c26e9a74bf254e2ac223dc1072fce493"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -73,9 +73,9 @@ class kb_DRAM:
         print_database_locations()
 
         # get files
-        fasta_loc = assembly_util.get_assembly_as_fasta({'ref': params['assembly_input_ref']})['path']
-
-        annotate_bins(fasta_loc, output_dir, min_contig_size, low_mem_mode=True, keep_tmp_dir=False, threads=4,
+        fastas = assembly_util.get_fastas({'ref_lst': [params['assembly_input_ref']]})
+        fasta_locs = [fasta['path'] for fasta in fastas]
+        annotate_bins(fasta_locs, output_dir, min_contig_size, low_mem_mode=True, keep_tmp_dir=False, threads=4,
                       verbose=False)
         annotations_tsv_loc = os.path.join(output_dir, 'annotations.tsv')
         output_files.append({
