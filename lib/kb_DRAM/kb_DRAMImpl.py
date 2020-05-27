@@ -110,7 +110,7 @@ class kb_DRAM:
         #     f.write(annotations.to_html())
         html_file = os.path.join(distill_output_dir, 'product.html')
         report_shock_id = datafile_util.file_to_shock({
-            'file_path': output_dir,
+            'file_path': distill_output_dir,
             'pack': 'zip'
         })['shock_id']
         html_report = [{
