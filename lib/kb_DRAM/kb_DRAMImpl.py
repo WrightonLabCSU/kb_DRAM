@@ -79,8 +79,8 @@ class kb_DRAM:
         print(type(fastas))
         print(fastas)
         fasta_locs = [fasta['paths'][0] for fasta in fastas.values()]  # would paths ever have more than one thing?
-        annotate_bins(fasta_locs, output_dir, min_contig_size, low_mem_mode=True, keep_tmp_dir=False, threads=4,
-                      verbose=False)
+        annotate_bins(fasta_locs, output_dir, min_contig_size, low_mem_mode=True, rename_bins=False, keep_tmp_dir=False,
+                      threads=4, verbose=False)
         annotations_tsv_loc = os.path.join(output_dir, 'annotations.tsv')
         output_files.append({
             'path': annotations_tsv_loc,
