@@ -4,8 +4,9 @@ import logging
 import os
 import pandas as pd
 
-from mag_annotator.annotate_bins import annotate_bins
 from mag_annotator.database_processing import import_config, print_database_locations
+from mag_annotator.annotate_bins import annotate_bins
+from mag_annotator.summarize_genomes import summarize_genomes
 
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.AssemblyUtilClient import AssemblyUtil
@@ -79,6 +80,8 @@ class kb_DRAM:
         print(type(fastas))
         print(fastas)
         fasta_locs = [fasta['paths'][0] for fasta in fastas.values()]  # would paths ever have more than one thing?
+
+        # annotate bins
         annotate_bins(fasta_locs, output_dir, min_contig_size, low_mem_mode=True, rename_bins=False, keep_tmp_dir=False,
                       threads=4, verbose=False)
         annotations_tsv_loc = os.path.join(output_dir, 'annotations.tsv')
@@ -88,12 +91,24 @@ class kb_DRAM:
             'label': 'annotations.tsv',
             'description': 'DRAM annotations in a tab separate table format'
         })
-        annotations = pd.read_csv(annotations_tsv_loc, sep='\t', index_col=0)
+
+        # distill
+        distill_output_dir = os.path.join(output_dir, 'distilled')
+        trna_path = os.path.join(output_dir, 'trnas.tsv')
+        if not os.path.exists(trna_path):
+            trna_path = None
+        rrna_path = os.path.join(output_dir, 'rrnas.tsv')
+        if not os.path.exists(rrna_path):
+            rrna_path = None
+        summarize_genomes(annotations_tsv_loc, trna_path, rrna_path, output_dir=distill_output_dir,
+                          groupby_column='fasta')
 
         # generate report
-        html_file = os.path.join(output_dir, 'index.html')
-        with open(html_file, 'w') as f:
-            f.write(annotations.to_html())
+        # annotations = pd.read_csv(annotations_tsv_loc, sep='\t', index_col=0)
+        # html_file = os.path.join(output_dir, 'index.html')
+        # with open(html_file, 'w') as f:
+        #     f.write(annotations.to_html())
+        html_file = os.path.join(distill_output_dir, 'product.html')
         report_shock_id = datafile_util.file_to_shock({
             'file_path': output_dir,
             'pack': 'zip'
