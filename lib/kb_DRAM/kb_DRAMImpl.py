@@ -10,6 +10,8 @@ from mag_annotator.database_processing import import_config, print_database_loca
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.DataFileUtilClient import DataFileUtil
+
+# TODO: Fix no pfam annotations bug
 #END_HEADER
 
 

@@ -13,6 +13,8 @@ module kb_DRAM {
     */
     funcdef run_kb_dram_annotate(mapping<string,UnspecifiedObject> params) returns (ReportResults output) authentication required;
 
+    typedef string DRAM_annotations_table;
+
     funcdef run_kb_dram_distill(mapping<string,UnspecifiedObject> params) returns (ReportResults output) authentication required;
 
     funcdef run_kb_dramv_annotate(mapping<string,UnspecifiedObject> params) returns (ReportResults output) authentication required;
