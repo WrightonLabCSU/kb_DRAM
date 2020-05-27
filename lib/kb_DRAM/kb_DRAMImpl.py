@@ -76,6 +76,8 @@ class kb_DRAM:
 
         # get files
         fastas = assembly_util.get_fastas({'ref_lst': [params['assembly_input_ref']]})
+        print(type(fastas))
+        print(fastas)
         fasta_locs = [fasta['path'] for fasta in fastas]
         annotate_bins(fasta_locs, output_dir, min_contig_size, low_mem_mode=True, keep_tmp_dir=False, threads=4,
                       verbose=False)
