@@ -78,7 +78,7 @@ class kb_DRAM:
         fastas = assembly_util.get_fastas({'ref_lst': [params['assembly_input_ref']]})
         print(type(fastas))
         print(fastas)
-        fasta_locs = [fasta['path'] for fasta in fastas]
+        fasta_locs = [fasta['paths'][0] for fasta in fastas.values()]  # would paths ever have more than one thing?
         annotate_bins(fasta_locs, output_dir, min_contig_size, low_mem_mode=True, keep_tmp_dir=False, threads=4,
                       verbose=False)
         annotations_tsv_loc = os.path.join(output_dir, 'annotations.tsv')
