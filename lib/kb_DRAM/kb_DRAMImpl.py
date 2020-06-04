@@ -77,8 +77,6 @@ class kb_DRAM:
 
         # get files
         fastas = assembly_util.get_fastas({'ref_lst': [params['assembly_input_ref']]})
-        print(type(fastas))
-        print(fastas)
         fasta_locs = [fasta['paths'][0] for fasta in fastas.values()]  # would paths ever have more than one thing?
 
         # annotate bins
