@@ -104,19 +104,21 @@ class kb_DRAM:
             'description': 'Genes as amino acids predicted by DRAM with brief annotations'
         })
         rrnas_loc = os.path.join(output_dir, 'rrnas.tsv')
-        output_files.append({
-            'path': rrnas_loc,
-            'name': 'rrnas.tsv',
-            'label': 'rrnas.tsv',
-            'description': 'Tab separated table of rRNAs as detected by barrnap'
-        })
+        if os.path.exists(rrnas_loc):
+            output_files.append({
+                'path': rrnas_loc,
+                'name': 'rrnas.tsv',
+                'label': 'rrnas.tsv',
+                'description': 'Tab separated table of rRNAs as detected by barrnap'
+            })
         trnas_loc = os.path.join(output_dir, 'trnas.tsv')
-        output_files.append({
-            'path': trnas_loc,
-            'name': 'trnas.tsv',
-            'label': 'trnas.tsv',
-            'description': 'Tab separated table of tRNAs as detected by tRNAscan-SE'
-        })
+        if os.path.exists(trnas_loc):
+            output_files.append({
+                'path': trnas_loc,
+                'name': 'trnas.tsv',
+                'label': 'trnas.tsv',
+                'description': 'Tab separated table of tRNAs as detected by tRNAscan-SE'
+            })
 
         # distill
         distill_output_dir = os.path.join(output_dir, 'distilled')
