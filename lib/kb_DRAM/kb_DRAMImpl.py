@@ -153,14 +153,14 @@ class kb_DRAM:
         # generate report
         html_file = os.path.join(distill_output_dir, 'product.html')
         report_shock_id = datafile_util.file_to_shock({
-            'file_path': distill_output_dir,
+            'file_path': output_dir,
             'pack': 'zip'
         })['shock_id']
         html_report = [{
             'shock_id': report_shock_id,
             'name': os.path.basename(html_file),
             'label': os.path.basename(html_file),
-            'description': 'HTML summary report for DRAM annotations.'
+            'description': 'DRAM product.'
         }]
         report = report_util.create_extended_report({'message': 'Here are the results from your DRAM run.',
                                                      'workspace_name': params['workspace_name'],
