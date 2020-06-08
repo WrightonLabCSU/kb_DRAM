@@ -89,6 +89,34 @@ class kb_DRAM:
             'label': 'annotations.tsv',
             'description': 'DRAM annotations in a tab separate table format'
         })
+        genes_fna_loc = os.path.join(output_dir, 'genes.fna')
+        output_files.append({
+            'path': genes_fna_loc,
+            'name': 'genes.fna',
+            'label': 'genes.fna',
+            'description': 'Genes as nucleotides predicted by DRAM with brief annotations'
+        })
+        genes_faa_loc = os.path.join(output_dir, 'genes.faa')
+        output_files.append({
+            'path': genes_faa_loc,
+            'name': 'genes.faa',
+            'label': 'genes.faa',
+            'description': 'Genes as amino acids predicted by DRAM with brief annotations'
+        })
+        rrnas_loc = os.path.join(output_dir, 'rrnas.tsv')
+        output_files.append({
+            'path': rrnas_loc,
+            'name': 'rrnas.tsv',
+            'label': 'rrnas.tsv',
+            'description': 'Tab separated table of rRNAs as detected by barrnap'
+        })
+        trnas_loc = os.path.join(output_dir, 'trnas.tsv')
+        output_files.append({
+            'path': trnas_loc,
+            'name': 'trnas.tsv',
+            'label': 'trnas.tsv',
+            'description': 'Tab separated table of tRNAs as detected by tRNAscan-SE'
+        })
 
         # distill
         distill_output_dir = os.path.join(output_dir, 'distilled')
@@ -100,12 +128,29 @@ class kb_DRAM:
             rrna_path = None
         summarize_genomes(annotations_tsv_loc, trna_path, rrna_path, output_dir=distill_output_dir,
                           groupby_column='fasta')
+        product_tsv_loc = os.path.join(distill_output_dir, 'product.tsv')
+        output_files.append({
+            'path': product_tsv_loc,
+            'name': 'product.tsv',
+            'label': 'product.tsv',
+            'description': 'DRAM product in tabular format'
+        })
+        metabolism_summary_loc = os.path.join(distill_output_dir, 'metabolism_summary.xlsx')
+        output_files.append({
+            'path': metabolism_summary_loc,
+            'name': 'metabolism_summary.xlsx',
+            'label': 'metabolism_summary.xlsx',
+            'description': 'DRAM metabolism summary tables'
+        })
+        genome_stats_loc = os.path.join(distill_output_dir, 'genome_stats.tsv')
+        output_files.append({
+            'path': genome_stats_loc,
+            'name': 'genome_stats.tsv',
+            'label': 'genome_stats.tsv',
+            'description': 'DRAM genome statistics table'
+        })
 
         # generate report
-        # annotations = pd.read_csv(annotations_tsv_loc, sep='\t', index_col=0)
-        # html_file = os.path.join(output_dir, 'index.html')
-        # with open(html_file, 'w') as f:
-        #     f.write(annotations.to_html())
         html_file = os.path.join(distill_output_dir, 'product.html')
         report_shock_id = datafile_util.file_to_shock({
             'file_path': distill_output_dir,
