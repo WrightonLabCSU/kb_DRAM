@@ -111,6 +111,8 @@ class kb_DRAM:
                 'label': 'rrnas.tsv',
                 'description': 'Tab separated table of rRNAs as detected by barrnap'
             })
+        else:
+            rrnas_loc = None
         trnas_loc = os.path.join(output_dir, 'trnas.tsv')
         if os.path.exists(trnas_loc):
             output_files.append({
@@ -119,16 +121,12 @@ class kb_DRAM:
                 'label': 'trnas.tsv',
                 'description': 'Tab separated table of tRNAs as detected by tRNAscan-SE'
             })
+        else:
+            trnas_loc = None
 
         # distill
         distill_output_dir = os.path.join(output_dir, 'distilled')
-        trna_path = os.path.join(output_dir, 'trnas.tsv')
-        if not os.path.exists(trna_path):
-            trna_path = None
-        rrna_path = os.path.join(output_dir, 'rrnas.tsv')
-        if not os.path.exists(rrna_path):
-            rrna_path = None
-        summarize_genomes(annotations_tsv_loc, trna_path, rrna_path, output_dir=distill_output_dir,
+        summarize_genomes(annotations_tsv_loc, trnas_loc, rrnas_loc, output_dir=distill_output_dir,
                           groupby_column='fasta')
         product_tsv_loc = os.path.join(distill_output_dir, 'product.tsv')
         output_files.append({
@@ -153,7 +151,9 @@ class kb_DRAM:
         })
 
         # generate report
-        html_file = os.path.join(distill_output_dir, 'product.html')
+        html_file = os.path.join(output_dir, 'product.html')
+        # move html to main directory uploaded to shock so kbase can find it
+        os.rename(os.path.join(distill_output_dir, 'product.html'), html_file)
         report_shock_id = datafile_util.file_to_shock({
             'file_path': output_dir,
             'pack': 'zip'
