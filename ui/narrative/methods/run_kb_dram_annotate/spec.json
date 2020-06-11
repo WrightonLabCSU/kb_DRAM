@@ -4,7 +4,7 @@
         "michael_shaffer"
     ],
     "contact": "",
-    "categories": ["active"],
+    "categories": ["active", "annotation"],
     "widgets": {
         "input": null,
         "output": null

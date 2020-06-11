@@ -60,6 +60,12 @@ class kb_DRAM:
         # ctx is the context object
         # return variables are: output
         #BEGIN run_kb_dram_annotate
+        # validate inputs
+        if not isinstance(params['assembly_input_ref'], str) or not len(params['assembly_input_ref']):
+            raise ValueError('Pass in a valid assembly reference string')
+        if not isinstance(params['min_contig_size'], int) or (params['min_contig_size'] < 0):
+            raise ValueError('Min contig size must be a non-negative integer')
+
         # setup params
         min_contig_size = params['min_contig_size']
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')

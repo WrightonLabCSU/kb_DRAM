@@ -8,7 +8,6 @@ from kb_DRAM.kb_DRAMImpl import kb_DRAM
 from kb_DRAM.kb_DRAMServer import MethodContext
 from kb_DRAM.authclient import KBaseAuth as _KBaseAuth
 
-from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.WorkspaceClient import Workspace
 
 
@@ -53,8 +52,19 @@ class kb_DRAMTest(unittest.TestCase):
             cls.wsClient.delete_workspace({'workspace': cls.wsName})
             print('Test workspace was deleted')
 
+    def test_kb_dram_annotate_bad_params(self):
+        # missing assembly ref
+        with self.assertRaises(ValueError):
+            self.serviceImpl.run_kb_dram_annotate(self.ctx, {'workspace_name': self.wsName,
+                                                             'min_length': 100})
+        # bad min length
+        with self.assertRaises(ValueError):
+            self.serviceImpl.run_kb_dram_annotate(self.ctx, {'workspace_name': self.wsName,
+                                                             'assembly_ref': '41343/4/1',
+                                                             'min_length': -200})
+
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
-    def test_your_method(self):
+    def test_kb_dram_annotate_test(self):
         # Prepare test objects in workspace if needed using
         # self.getWsClient().save_objects({'workspace': self.getWsName(),
         #                                  'objects': []})
@@ -64,8 +74,10 @@ class kb_DRAMTest(unittest.TestCase):
         #
         # Check returned data with
         # self.assertEqual(ret[...], ...) or other unittest methods
-        ref = "79/16/1"
+        ref = "41343/4/1"
         params = {'workspace_name': self.wsName,
                   'assembly_input_ref': ref,
                   'min_contig_size': 1000}
         ret = self.serviceImpl.run_kb_dram_annotate(self.ctx, params)
+        self.assertTrue(len(ret[0]['report_name']))
+        self.assertTrue(len(ret[0]['report_ref']))
