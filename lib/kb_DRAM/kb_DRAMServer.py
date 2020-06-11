@@ -342,18 +342,6 @@ class Application(object):
                              name='kb_DRAM.run_kb_dram_annotate',
                              types=[dict])
         self.method_authentication['kb_DRAM.run_kb_dram_annotate'] = 'required'  # noqa
-        self.rpc_service.add(impl_kb_DRAM.run_kb_dram_distill,
-                             name='kb_DRAM.run_kb_dram_distill',
-                             types=[dict])
-        self.method_authentication['kb_DRAM.run_kb_dram_distill'] = 'required'  # noqa
-        self.rpc_service.add(impl_kb_DRAM.run_kb_dramv_annotate,
-                             name='kb_DRAM.run_kb_dramv_annotate',
-                             types=[dict])
-        self.method_authentication['kb_DRAM.run_kb_dramv_annotate'] = 'required'  # noqa
-        self.rpc_service.add(impl_kb_DRAM.run_kb_dramv_distill,
-                             name='kb_DRAM.run_kb_dramv_distill',
-                             types=[dict])
-        self.method_authentication['kb_DRAM.run_kb_dramv_distill'] = 'required'  # noqa
         self.rpc_service.add(impl_kb_DRAM.status,
                              name='kb_DRAM.status',
                              types=[dict])

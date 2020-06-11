@@ -12,12 +12,4 @@ module kb_DRAM {
         This example function accepts any number of parameters and returns results in a KBaseReport
     */
     funcdef run_kb_dram_annotate(mapping<string,UnspecifiedObject> params) returns (ReportResults output) authentication required;
-
-    typedef string DRAM_annotations_table;
-
-    funcdef run_kb_dram_distill(mapping<string,UnspecifiedObject> params) returns (ReportResults output) authentication required;
-
-    funcdef run_kb_dramv_annotate(mapping<string,UnspecifiedObject> params) returns (ReportResults output) authentication required;
-
-    funcdef run_kb_dramv_distill(mapping<string,UnspecifiedObject> params) returns (ReportResults output) authentication required;
 };

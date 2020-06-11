@@ -1,10 +1,10 @@
 #
 # define display information
 #
-name: DRAM annotate
+name: Annotate and Distill Assemblies with DRAM
 
 tooltip: |
-    Annotate your genome or contig collection with DRAM
+    Annotate your assembly with DRAM. Annotations will then be distilled to create an interactive functional summary per assembly.
 
 screenshots: []
 
@@ -38,10 +38,19 @@ parameters :
         ui-name: |
             Minimum contig length
         short-hint: |
-            Contigs shorter than this length will not be annotated (default: 5000)
+            Contigs shorter than this length will not be annotated (default: 2500)
+
 description : |
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed pulvinar efficitur felis, quis tincidunt sem congue at. Vivamus ornare feugiat faucibus. Fusce tincidunt mattis nunc, nec varius purus convallis quis. Nulla facilisi. In at magna dolor. Suspendisse sit amet felis at arcu auctor dapibus vitae pharetra dui. Nam semper mi quis tortor fermentum mollis. Donec a arcu pharetra, rutrum dolor vitae, rutrum mauris. Donec ornare fringilla sagittis. Nam laoreet est in elementum malesuada. Vestibulum id mi eget urna hendrerit feugiat. Donec et ultrices nulla. Phasellus diam eros, dapibus at tempus nec, semper vel ante.</p>
+    <p>DRAM will annotate assemblies and provide summarization of the metabolisms each assembly is capable of. DRAM is most useful for annotating assebmly sets where the DRAM product can be used to compare the metabolic profiles of each assembly.</p>
 
-    <p>Curabitur auctor, metus at tristique euismod, odio elit tincidunt neque, a facilisis sem massa convallis dolor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc ut hendrerit tellus. Nunc lacinia laoreet finibus. Etiam vitae sagittis enim. Fusce consectetur porta est eu pretium. In hac habitasse platea dictumst. Integer pellentesque sit amet sapien id venenatis. Nullam ac risus at orci eleifend aliquet. Vestibulum elit purus, euismod a nibh quis, pellentesque semper leo. Curabitur ullamcorper felis hendrerit nunc egestas, sit amet pharetra sapien porttitor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas hendrerit ipsum a ligula aliquet vestibulum. Duis a ante urna. Aenean ante neque, rhoncus id luctus ut, accumsan vel nunc.</p>
+    <p>DRAM for MAGs works by annotating all genomes given with all databases used by DRAM. The user is given a tab delimited annotations file with all annotations from all databases for all genes in all genomes. Additionally the user is given a folder with genbank files for each genome, a gff file with all annotations across genomes as well as annotated nucleotide and amino acid fasta files of all genes. The results of annotation can be distilled. This will generate three files: 1. The genome statistics table which includes all statistics required by MIMAG, 2. the metabolism summary which gives gene counts of functional genes across a wide variety of metabolisms and 3. the product which is a heatmap showing coverage of modules, the coverage of electron transport chain components and the presence of selected metabolic functions.</p>
 
-    <p>Pellentesque accumsan aliquet magna, id consectetur tellus condimentum eu. Suspendisse elit dui, ornare ac leo eget, tincidunt feugiat orci. Maecenas auctor gravida lacinia. Mauris interdum nisi vel gravida varius. Nullam tempus, purus eget posuere aliquet, odio elit semper massa, quis facilisis massa odio vitae lacus. Fusce varius enim a mi vehicula tempus. Maecenas faucibus tellus ipsum, at venenatis ipsum auctor et. Suspendisse sem mi, dignissim id porta efficitur, auctor eget magna. Vivamus varius purus nulla, porttitor euismod lorem cursus quis. Nulla sit amet eros nec sem ultrices pulvinar.</p>
+publications :
+    -
+        display-text: |
+            DRAM source code
+        link: https://github.com/shafferm/DRAM/
+    -
+        display-text: |
+            DRAM documentation
+        link: https://github.com/shafferm/DRAM/wiki

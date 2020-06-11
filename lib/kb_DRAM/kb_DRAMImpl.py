@@ -33,7 +33,7 @@ class kb_DRAM:
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/shafferm/kb_DRAM.git"
-    GIT_COMMIT_HASH = "5eb40b83c26e9a74bf254e2ac223dc1072fce493"
+    GIT_COMMIT_HASH = "b45dbfef0afecf5b40545898bc2f1130b1d51b0f"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -185,62 +185,6 @@ class kb_DRAM:
         # return the results
         return [output]
 
-    def run_kb_dram_distill(self, ctx, params):
-        """
-        :param params: instance of mapping from String to unspecified object
-        :returns: instance of type "ReportResults" -> structure: parameter
-           "report_name" of String, parameter "report_ref" of String
-        """
-        # ctx is the context object
-        # return variables are: output
-        #BEGIN run_kb_dram_distill
-        output = {}
-        #END run_kb_dram_distill
-
-        # At some point might do deeper type checking...
-        if not isinstance(output, dict):
-            raise ValueError('Method run_kb_dram_distill return value ' +
-                             'output is not type dict as required.')
-        # return the results
-        return [output]
-
-    def run_kb_dramv_annotate(self, ctx, params):
-        """
-        :param params: instance of mapping from String to unspecified object
-        :returns: instance of type "ReportResults" -> structure: parameter
-           "report_name" of String, parameter "report_ref" of String
-        """
-        # ctx is the context object
-        # return variables are: output
-        #BEGIN run_kb_dramv_annotate
-        output = {}
-        #END run_kb_dramv_annotate
-
-        # At some point might do deeper type checking...
-        if not isinstance(output, dict):
-            raise ValueError('Method run_kb_dramv_annotate return value ' +
-                             'output is not type dict as required.')
-        # return the results
-        return [output]
-
-    def run_kb_dramv_distill(self, ctx, params):
-        """
-        :param params: instance of mapping from String to unspecified object
-        :returns: instance of type "ReportResults" -> structure: parameter
-           "report_name" of String, parameter "report_ref" of String
-        """
-        # ctx is the context object
-        # return variables are: output
-        #BEGIN run_kb_dramv_distill
-        output = {}
-        #END run_kb_dramv_distill
-
-        # At some point might do deeper type checking...
-        if not isinstance(output, dict):
-            raise ValueError('Method run_kb_dramv_distill return value ' +
-                             'output is not type dict as required.')
-        # return the results
-        return [output]
     def status(self, ctx):
         #BEGIN_STATUS
         returnVal = {'state': "OK",
