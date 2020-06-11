@@ -54,14 +54,14 @@ class kb_DRAMTest(unittest.TestCase):
 
     def test_kb_dram_annotate_bad_params(self):
         # missing assembly ref
-        with self.assertRaises(ValueError):
+        with self.assertRaises(KeyError):
             self.serviceImpl.run_kb_dram_annotate(self.ctx, {'workspace_name': self.wsName,
-                                                             'min_length': 100})
+                                                             'min_contig_size': 100})
         # bad min length
         with self.assertRaises(ValueError):
             self.serviceImpl.run_kb_dram_annotate(self.ctx, {'workspace_name': self.wsName,
-                                                             'assembly_ref': '41343/4/1',
-                                                             'min_length': -200})
+                                                             'assembly_input_ref': '41343/4/1',
+                                                             'min_contig_size': -200})
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
     def test_kb_dram_annotate_test(self):
