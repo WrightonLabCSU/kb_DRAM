@@ -9,6 +9,7 @@ from kb_DRAM.kb_DRAMServer import MethodContext
 from kb_DRAM.authclient import KBaseAuth as _KBaseAuth
 
 from installed_clients.WorkspaceClient import Workspace
+from installed_clients.AssemblyUtilClient import AssemblyUtil
 
 
 class kb_DRAMTest(unittest.TestCase):
@@ -81,3 +82,8 @@ class kb_DRAMTest(unittest.TestCase):
         ret = self.serviceImpl.run_kb_dram_annotate(self.ctx, params)
         self.assertTrue(len(ret[0]['report_name']))
         self.assertTrue(len(ret[0]['report_ref']))
+
+    def test_what_is_fastas(self):
+        assembly_util = AssemblyUtil(self.callback_url)
+        fastas = assembly_util.get_fastas({'ref_lst': ['41343/11/3']})
+        print(fastas)

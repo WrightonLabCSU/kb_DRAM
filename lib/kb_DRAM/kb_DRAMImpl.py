@@ -3,14 +3,17 @@
 import logging
 import os
 import pandas as pd
+from skbio import read as read_sequence
 
 from mag_annotator.database_processing import import_config, print_database_locations
 from mag_annotator.annotate_bins import annotate_bins
 from mag_annotator.summarize_genomes import summarize_genomes
+from mag_annotator.utils import remove_suffix
 
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.DataFileUtilClient import DataFileUtil
+from installed_clients.GenomeFileUtilClient import GenomeFileUtil
 
 # TODO: Fix no pfam annotations bug
 #END_HEADER
@@ -33,7 +36,7 @@ class kb_DRAM:
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/shafferm/kb_DRAM.git"
-    GIT_COMMIT_HASH = "b45dbfef0afecf5b40545898bc2f1130b1d51b0f"
+    GIT_COMMIT_HASH = "702a4efe2362e2210d248eeda2300b551a841421"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -74,6 +77,7 @@ class kb_DRAM:
 
         # create Util objects
         assembly_util = AssemblyUtil(self.callback_url)
+        genome_util = GenomeFileUtil(self.callback_url)
         datafile_util = DataFileUtil(self.callback_url)
         report_util = KBaseReport(self.callback_url)
 
@@ -82,8 +86,13 @@ class kb_DRAM:
         print_database_locations()
 
         # get files
-        fastas = assembly_util.get_fastas({'ref_lst': [params['assembly_input_ref']]})
-        fasta_locs = [fasta['paths'][0] for fasta in fastas.values()]  # would paths ever have more than one thing?
+        assemblies = assembly_util.get_fastas({'ref_lst': [params['assembly_input_ref']]})
+        # would paths ever have more than one thing?
+        fasta_locs = [assembly_data['paths'][0] for assembly_ref, assembly_data in assemblies.items()]
+        # get assembly refs from dram assigned genome names
+        # TODO: rewrite annotate_bins to take optional list of fasta names and pass assembly refs as list
+        assembly_ref_dict = {os.path.splitext(os.path.basename(remove_suffix(assembly_data['paths'][0], '.gz')))[0]:
+                                 assembly_ref for assembly_ref, assembly_data in assemblies.items()}
 
         # annotate bins
         annotate_bins(fasta_locs, output_dir, min_contig_size, low_mem_mode=True, rename_bins=False, keep_tmp_dir=False,
@@ -156,6 +165,48 @@ class kb_DRAM:
             'description': 'DRAM genome statistics table'
         })
 
+        # generate genome files
+        annotations = pd.read_csv(annotations_tsv_loc, sep='\t', index_col=0)
+        for genome_name, genome_annotations in annotations.groupby('fasta'):
+            # set scientific name, domain and genetic code
+            if 'bin_taxonomy' in genome_annotations.columns:  # assuming gtdb taxa strings
+                scientific_name = genome_annotations['bin_taxonomy'].iloc[0]  # not really the scientific name, whatever
+                domain = scientific_name.split[';'][0]
+            else:
+                scientific_name = 'Unknown'
+                domain = 'Unknown'
+            # get assembly information
+            assembly_ref = assembly_ref_dict[genome_name]
+            sequence = ''.join([str(i) for i in read_sequence(assemblies[assembly_ref]['paths'][0], format='fasta')])
+            sequence = sequence.upper()
+            dna_size = len(sequence)
+            gc_content = sum([(i == 'G') or (i == 'C') for i in sequence]) / dna_size
+            # get features
+            cdss = []
+            mrnas = []
+            features = []
+            for feature, row in genome_annotations.iterrows():
+                pass
+            genome = {"id": "Unknown",
+                      "features": features,
+                      "scientific_name": scientific_name,
+                      "domain": domain,
+                      "genetic_code": 0,  # might be able to get this from prodigal calls
+                      "assembly_ref": assembly_ref,
+                      "cdss": cdss,
+                      "mrnas": mrnas,
+                      "source": "PROKKA annotation pipeline",
+                      "gc_content": gc_content,
+                      "dna_size": dna_size,
+                      "reference_annotation": 0}
+
+            info = genome_util.save_one_genome({"workspace": params["output_workspace"],
+                                                "name": '%s_genome' % genome_name,
+                                                "data": genome,
+                                                "provenance": ctx.provenance()})["info"]
+            output_objects.append({"ref": str(info[6]) + "/" + str(info[0]) + "/" + str(info[4]),
+                                   "description": 'Annotated Genome'})
+
         # generate report
         html_file = os.path.join(output_dir, 'product.html')
         # move html to main directory uploaded to shock so kbase can find it
@@ -181,7 +232,6 @@ class kb_DRAM:
             'report_name': report['name'],
             'report_ref': report['ref'],
         }
-
         #END run_kb_dram_annotate
 
         # At some point might do deeper type checking...
