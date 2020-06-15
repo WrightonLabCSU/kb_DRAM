@@ -200,7 +200,7 @@ class kb_DRAM:
                       "dna_size": dna_size,
                       "reference_annotation": 0}
 
-            info = genome_util.save_one_genome({"workspace": params["output_workspace"],
+            info = genome_util.save_one_genome({"workspace": params["workspace_name"],
                                                 "name": '%s_genome' % genome_name,
                                                 "data": genome,
                                                 "provenance": ctx.provenance()})["info"]
