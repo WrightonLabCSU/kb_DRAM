@@ -2,6 +2,7 @@
 #BEGIN_HEADER
 import logging
 import os
+import hashlib
 import pandas as pd
 from skbio import read as read_sequence
 
@@ -167,6 +168,7 @@ class kb_DRAM:
 
         # generate genome files
         annotations = pd.read_csv(annotations_tsv_loc, sep='\t', index_col=0)
+        genes = {i.metadata['ID']: i for i in read_sequence(genes_fna_loc, format='fasta')}
         for genome_name, genome_annotations in annotations.groupby('fasta'):
             # set scientific name, domain and genetic code
             if 'bin_taxonomy' in genome_annotations.columns:  # assuming gtdb taxa strings
@@ -181,12 +183,26 @@ class kb_DRAM:
             sequence = sequence.upper()
             dna_size = len(sequence)
             gc_content = sum([(i == 'G') or (i == 'C') for i in sequence]) / dna_size
-            # get features
+            # get ORF features
             cdss = []
             mrnas = []
             features = []
             for feature, row in genome_annotations.iterrows():
-                pass
+                # get general gene information
+                fid = feature
+                location = [[row['scaffold'], row['start_position'], row['strandedness'],
+                             row['end_position']-row['start_position']]]
+                aliases = []
+                # get gene sequence
+                dna = str(genes[feature])
+                md5 = hashlib.md5(dna).hexdigest()
+                # define feature
+                feature = {"id": fid, "location": location, "type": "gene",
+                           "aliases": aliases, "md5": md5, "dna_sequence": dna,
+                           "dna_sequence_length": len(dna)}
+                features.append(feature)
+            # TODO: get rRNA features
+            # TODO: get tRNA features
             genome = {"id": "Unknown",
                       "features": features,
                       "scientific_name": scientific_name,
