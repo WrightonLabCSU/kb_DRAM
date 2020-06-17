@@ -168,7 +168,7 @@ class kb_DRAM:
 
         # generate genome files
         annotations = pd.read_csv(annotations_tsv_loc, sep='\t', index_col=0)
-        genes = {i.metadata['ID']: i for i in read_sequence(genes_fna_loc, format='fasta')}
+        genes = {i.metadata['id']: i for i in read_sequence(genes_fna_loc, format='fasta')}
         for genome_name, genome_annotations in annotations.groupby('fasta'):
             # set scientific name, domain and genetic code
             if 'bin_taxonomy' in genome_annotations.columns:  # assuming gtdb taxa strings
