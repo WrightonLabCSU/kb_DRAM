@@ -190,7 +190,8 @@ class kb_DRAM:
             for feature, row in genome_annotations.iterrows():
                 # get general gene information
                 fid = feature
-                location = [[row['scaffold'], row['start_position'], row['strandedness'],
+                strandedness = '+' if row['strandedness'] == 1 else '-'
+                location = [[row['scaffold'], row['start_position'], strandedness,
                              row['end_position']-row['start_position']]]
                 aliases = []
                 # get gene sequence
