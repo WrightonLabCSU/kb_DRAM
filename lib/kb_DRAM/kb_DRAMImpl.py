@@ -168,7 +168,8 @@ class kb_DRAM:
 
         # generate genome files
         annotations = pd.read_csv(annotations_tsv_loc, sep='\t', index_col=0)
-        genes = {i.metadata['id']: i for i in read_sequence(genes_fna_loc, format='fasta')}
+        genes_nucl = {i.metadata['id']: i for i in read_sequence(genes_fna_loc, format='fasta')}
+        genes_aa = {i.metadata['id']: i for i in read_sequence(genes_faa_loc, format='fasta')}
         for genome_name, genome_annotations in annotations.groupby('fasta'):
             # set scientific name, domain and genetic code
             if 'bin_taxonomy' in genome_annotations.columns:  # assuming gtdb taxa strings
@@ -187,21 +188,40 @@ class kb_DRAM:
             cdss = []
             mrnas = []
             features = []
-            for feature, row in genome_annotations.iterrows():
+            for feature_name, row in genome_annotations.iterrows():
                 # get general gene information
-                fid = feature
+                fid = feature_name
                 strandedness = '+' if row['strandedness'] == 1 else '-'
                 location = [[row['scaffold'], row['start_position'], strandedness,
                              row['end_position']-row['start_position']]]
                 aliases = []
                 # get gene sequence
-                dna = str(genes[feature])
+                dna = str(genes_nucl[feature_name])
                 md5 = hashlib.md5(dna.encode()).hexdigest()
+                prot = str(genes_aa[feature_name])
+                # get mrna and cds data
+                cds_id = fid + "_CDS"
+                mrna_id = fid + "_mRNA"
+                if not pd.isna(row['kegg_hit']):
+                    product = ' '.join(row['kegg_hit'].split()[1:]).split(';')[0]
+                else:
+                    product = ''
                 # define feature
-                feature = {"id": fid, "location": location, "type": "gene",
-                           "aliases": aliases, "md5": md5, "dna_sequence": dna,
-                           "dna_sequence_length": len(dna)}
+                feature = {"id": fid, "location": location, "type": "gene", "aliases": aliases, "md5": md5,
+                           "dna_sequence": dna, "dna_sequence_length": len(dna), "protein_translation": prot,
+                           "protein_translation_length": len(prot), "cdss": [cds_id], "mrans": [mrna_id]}
+                if product != '':
+                    feature["function"] = product
                 features.append(feature)
+                # define cds
+                cds = {"id": cds_id, "location": location, "md5": md5, "parent_gene": fid, "parent_mrna": mrna_id,
+                       "function": (product if product else ""), "ontology_terms": {}, "protein_translation": prot,
+                       "protein_translation_length": len(prot), "aliases": aliases}
+                cdss.append(cds)
+                # define mrna
+                mrna = {"id": mrna_id, "location": location, "md5": md5,
+                        "parent_gene": fid, "cds": cds_id}
+                mrnas.append(mrna)
             # TODO: get rRNA features
             # TODO: get tRNA features
             genome = {"id": "Unknown",
@@ -212,7 +232,7 @@ class kb_DRAM:
                       "assembly_ref": assembly_ref,
                       "cdss": cdss,
                       "mrnas": mrnas,
-                      "source": "PROKKA annotation pipeline",
+                      "source": "DRAM annotation pipeline",
                       "gc_content": gc_content,
                       "dna_size": dna_size,
                       "reference_annotation": 0}
