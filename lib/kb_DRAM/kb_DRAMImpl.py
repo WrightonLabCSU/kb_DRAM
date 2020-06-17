@@ -195,7 +195,7 @@ class kb_DRAM:
                 aliases = []
                 # get gene sequence
                 dna = str(genes[feature])
-                md5 = hashlib.md5(dna).hexdigest()
+                md5 = hashlib.md5(dna.encode()).hexdigest()
                 # define feature
                 feature = {"id": fid, "location": location, "type": "gene",
                            "aliases": aliases, "md5": md5, "dna_sequence": dna,
