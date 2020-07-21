@@ -7,7 +7,7 @@
     "categories": ["active", "annotation"],
     "widgets": {
         "input": null,
-        "output": null
+        "output": "no-display"
     },
     "parameters": [ 
         {
@@ -74,8 +74,14 @@
                     "target_property": "assembly_input_ref",
                     "target_type_transform": "resolved-ref"
                 },{
+                    "input_parameter": "desc",
+                    "target_property": "desc"
+                },{
                     "input_parameter": "min_contig_size",
                     "target_property": "min_contig_size"
+                },{
+                    "input_parameter": "output_name",
+                    "target_property": "output_name"
                 }
             ],
             "output_mapping": [

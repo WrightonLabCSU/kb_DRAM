@@ -38,7 +38,7 @@ class kb_DRAM:
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/shafferm/kb_DRAM.git"
-    GIT_COMMIT_HASH = "702a4efe2362e2210d248eeda2300b551a841421"
+    GIT_COMMIT_HASH = "841dbe5ba8fc4081377fd7ab7848d41262a33015"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -69,6 +69,10 @@ class kb_DRAM:
         # validate inputs
         if not isinstance(params['assembly_input_ref'], str) or not len(params['assembly_input_ref']):
             raise ValueError('Pass in a valid assembly reference string')
+        if not isinstance(params['desc'], str) or not len(params['desc']):
+            raise ValueError('Pass in a valid genomeSet description')
+        if not isinstance(params['output_name'], str) or not len(params['output_name']):
+            raise ValueError('Pass in a valid genomeSet output name')
         if not isinstance(params['min_contig_size'], int) or (params['min_contig_size'] < 0):
             raise ValueError('Min contig size must be a non-negative integer')
 
@@ -312,7 +316,6 @@ class kb_DRAM:
                              'output is not type dict as required.')
         # return the results
         return [output]
-
     def status(self, ctx):
         #BEGIN_STATUS
         returnVal = {'state': "OK",
