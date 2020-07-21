@@ -22,15 +22,38 @@
             }
         },
         {
+            "id": "desc",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+		        "is_output_name": false
+            }
+        },
+        {
             "id": "min_contig_size",
             "optional": true,
-            "advanced": false,
+            "advanced": true,
             "allow_multiple": false,
             "default_values": [ "2500" ],
             "field_type": "text",
             "text_options": {
                 "validate_as": "int",
                 "min_integer" : 0
+            }
+        },
+        {
+            "id": "output_name",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": [ "KBaseSearch.GenomeSet", "KBaseSets.GenomeSet" ],
+		        "is_output_name": true
             }
         }
     ],

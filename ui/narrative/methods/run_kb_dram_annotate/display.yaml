@@ -34,11 +34,23 @@ parameters :
             Assembly/assembly set to be annotated
         short-hint : |
             The contig collection(s) you want to annotate with DRAM
+    desc:
+        ui-name: |
+            Description
+        short-hint: |
+            Describe Contents of Output GenomeSet
+        placeholder: |
+            Enter Description
     min_contig_size :
         ui-name: |
             Minimum contig length
         short-hint: |
             Contigs shorter than this length will not be annotated (default: 2500)
+    output_name:
+        ui-name: |
+            Output GenomeSet Name
+        short-hint: |
+            Name for the Output GenomeSet Collection
 
 description : |
     <p>DRAM will annotate assemblies and provide summarization of the metabolisms each assembly is capable of. DRAM is most useful for annotating assebmly sets where the DRAM product can be used to compare the metabolic profiles of each assembly.</p>

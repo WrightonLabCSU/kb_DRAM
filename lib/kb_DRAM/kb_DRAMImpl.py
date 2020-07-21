@@ -11,6 +11,7 @@ from mag_annotator.annotate_bins import annotate_bins
 from mag_annotator.summarize_genomes import summarize_genomes
 from mag_annotator.utils import remove_suffix
 
+from installed_clients.WorkspaceClient import Workspace as workspaceService
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.DataFileUtilClient import DataFileUtil
@@ -47,6 +48,7 @@ class kb_DRAM:
     def __init__(self, config):
         #BEGIN_CONSTRUCTOR
         self.callback_url = os.environ['SDK_CALLBACK_URL']
+        self.workspaceURL = config['workspace-url']
         self.shared_folder = config['scratch']
         logging.basicConfig(format='%(created)s %(levelname)s: %(message)s',
                             level=logging.INFO)
@@ -77,6 +79,7 @@ class kb_DRAM:
         output_objects = []
 
         # create Util objects
+        wsClient = workspaceService(self.workspaceURL, token=ctx['token'])
         assembly_util = AssemblyUtil(self.callback_url)
         genome_util = GenomeFileUtil(self.callback_url)
         datafile_util = DataFileUtil(self.callback_url)
@@ -170,6 +173,8 @@ class kb_DRAM:
         annotations = pd.read_csv(annotations_tsv_loc, sep='\t', index_col=0)
         genes_nucl = {i.metadata['id']: i for i in read_sequence(genes_fna_loc, format='fasta')}
         genes_aa = {i.metadata['id']: i for i in read_sequence(genes_faa_loc, format='fasta')}
+        genome_ref_list = list()
+        genome_set_elements = dict()
         for genome_name, genome_annotations in annotations.groupby('fasta'):
             # set scientific name, domain and genetic code
             if 'bin_taxonomy' in genome_annotations.columns:  # assuming gtdb taxa strings
@@ -241,8 +246,38 @@ class kb_DRAM:
                                                 "name": '%s_genome' % genome_name,
                                                 "data": genome,
                                                 "provenance": ctx.provenance()})["info"]
-            output_objects.append({"ref": str(info[6]) + "/" + str(info[0]) + "/" + str(info[4]),
+            genome_ref = '%s/%s/%s' % (info[6], info[0], info[4])
+            genome_set_elements['%s_genome' % genome_name] = dict()
+            genome_set_elements['%s_genome' % genome_name]['ref'] = genome_ref
+            output_objects.append({"ref": genome_ref,
                                    "description": 'Annotated Genome'})
+            genome_ref_list.append(genome_ref)
+
+        # make genome set
+        provenance = [{}]
+        if 'provenance' in ctx:
+            provenance = ctx['provenance']
+        # add additional info to provenance here, in this case the input data object reference
+        provenance[0]['input_ws_objects'] = []
+        for ass_ref in genome_ref_list:
+            provenance[0]['input_ws_objects'].append(ass_ref)
+        provenance[0]['service'] = 'kb_SetUtilities'
+        provenance[0]['method'] = 'KButil_Batch_Create_GenomeSet'
+        output_genomeSet_obj = {'description': params['desc'],
+                                'elements': genome_set_elements
+                                }
+        output_genomeSet_name = params['output_name']
+        new_obj_info = wsClient.save_objects({'workspace': params['workspace_name'],
+                                              'objects': [{'type': 'KBaseSearch.GenomeSet',
+                                                           'data': output_genomeSet_obj,
+                                                           'name': output_genomeSet_name,
+                                                           'meta': {},
+                                                           'provenance': provenance
+                                                           }]
+                                              })[0]
+        # genome_set_ref = '%s/%s/%s' % (new_obj_info[6], new_obj_info[0], new_obj_info[4])
+        # output_objects.append({"ref": genome_set_ref,
+        #                        "description": params['desc']})
 
         # generate report
         html_file = os.path.join(output_dir, 'product.html')
