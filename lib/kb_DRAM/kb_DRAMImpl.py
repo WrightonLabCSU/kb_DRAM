@@ -279,9 +279,9 @@ class kb_DRAM:
                                                            'provenance': provenance
                                                            }]
                                               })[0]
-        # genome_set_ref = '%s/%s/%s' % (new_obj_info[6], new_obj_info[0], new_obj_info[4])
-        # output_objects.append({"ref": genome_set_ref,
-        #                        "description": params['desc']})
+        genome_set_ref = '%s/%s/%s' % (new_obj_info[6], new_obj_info[0], new_obj_info[4])
+        output_objects.append({"ref": genome_set_ref,
+                               "description": params['desc']})
 
         # generate report
         html_file = os.path.join(output_dir, 'product.html')
