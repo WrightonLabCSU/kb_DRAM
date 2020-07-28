@@ -5,6 +5,9 @@ import os
 import hashlib
 import pandas as pd
 from skbio import read as read_sequence
+import time
+import datetime
+import re
 
 from mag_annotator.database_processing import import_config, print_database_locations
 from mag_annotator.annotate_bins import annotate_bins
@@ -173,8 +176,21 @@ class kb_DRAM:
             'description': 'DRAM genome statistics table'
         })
 
-        # generate genome files
+        # set up ontology info
+        time_string = str(
+            datetime.datetime.fromtimestamp(time.time()).strftime('%Y_%m_%d_%H_%M_%S'))
+        yml_text = open('/kb/module/kbase.yml').read()
+        version = re.search("module-version:\n\W+(.+)\n", yml_text).group(1)
+
+        evidence = {"method": "DRAM Annotation (Evidence)",
+                    "method_version": version,
+                    "timestamp": time_string}
+        kegg_ontology_info = wsClient.get_objects([{'ref': "KBaseOntology/ko_ontology"}])[0]['info']
+        kegg_ontology_ref = '%s/%s/%s' % (kegg_ontology_info[6], kegg_ontology_info[0], kegg_ontology_info[4])
+        kegg_ontology_name = wsClient.get_objects([{'ref': "KBaseOntology/ko_ontology"}])[0]['data']['ontology']
         kegg_ontology = wsClient.get_objects([{'ref': "KBaseOntology/ko_ontology"}])[0]['data']['term_hash']
+
+        # generate genome files
         annotations = pd.read_csv(annotations_tsv_loc, sep='\t', index_col=0)
         genes_nucl = {i.metadata['id']: i for i in read_sequence(genes_fna_loc, format='fasta')}
         genes_aa = {i.metadata['id']: i for i in read_sequence(genes_faa_loc, format='fasta')}
@@ -212,23 +228,29 @@ class kb_DRAM:
                 # get mrna and cds data
                 cds_id = fid + "_CDS"
                 mrna_id = fid + "_mRNA"
+                # get product and ontology info
+                ontology_terms = {}
                 if not pd.isna(row['kegg_hit']):
-                    product = ' '.join(row['kegg_hit'].split()[1:]).split(';')[0]
+                    product = row['kegg_hit']
+                    if not pd.isna(row['kegg_id']):
+                        kegg_ontology_terms = {}
+                        for ko in row['kegg_id'].split(','):
+                            if ko in kegg_ontology:
+                                kegg_ontology_record = kegg_ontology[ko]
+                                kegg_ontology_term = {'id': kegg_ontology_record['id'],
+                                                      'evidence': [evidence],
+                                                      'term_name': kegg_ontology_record['name'],
+                                                      'ontology_ref': kegg_ontology_ref,
+                                                      'term_lineage': []}
+                                kegg_ontology_terms[kegg_ontology_record['id']] = kegg_ontology_term
+                        ontology_terms[kegg_ontology_name] = kegg_ontology_terms
                 else:
                     product = ''
                 # define feature
                 feature = {"id": fid, "location": location, "type": "gene", "aliases": aliases, "md5": md5,
                            "dna_sequence": dna, "dna_sequence_length": len(dna), "protein_translation": prot,
-                           "protein_translation_length": len(prot), "cdss": [cds_id], "mrans": [mrna_id]}
-                if product != '':
-                    feature["function"] = product
-                    ontology_terms = []
-                    if not pd.isna(row['kegg_id']):
-                        for ko in row['kegg_id'].split(','):
-                            if ko in kegg_ontology:
-                                ontology_terms.append(kegg_ontology[ko])
-                    if len(ontology_terms) > 0:
-                        feature["ontology_terms"] = ontology_terms
+                           "protein_translation_length": len(prot), "cdss": [cds_id], "mrans": [mrna_id],
+                           "function": product, "ontology_terms": ontology_terms}
                 features.append(feature)
                 # define cds
                 cds = {"id": cds_id, "location": location, "md5": md5, "parent_gene": fid, "parent_mrna": mrna_id,
