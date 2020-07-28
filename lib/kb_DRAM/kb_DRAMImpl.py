@@ -174,6 +174,7 @@ class kb_DRAM:
         })
 
         # generate genome files
+        kegg_ontology = wsClient.get_objects([{'ref': "KBaseOntology/ko_ontology"}])[0]['data']['term_hash']
         annotations = pd.read_csv(annotations_tsv_loc, sep='\t', index_col=0)
         genes_nucl = {i.metadata['id']: i for i in read_sequence(genes_fna_loc, format='fasta')}
         genes_aa = {i.metadata['id']: i for i in read_sequence(genes_faa_loc, format='fasta')}
@@ -221,6 +222,13 @@ class kb_DRAM:
                            "protein_translation_length": len(prot), "cdss": [cds_id], "mrans": [mrna_id]}
                 if product != '':
                     feature["function"] = product
+                    ontology_terms = []
+                    if not pd.isna(row['kegg_id']):
+                        for ko in row['kegg_id'].split(','):
+                            if ko in kegg_ontology:
+                                ontology_terms.append(kegg_ontology[ko])
+                    if len(ontology_terms) > 0:
+                        feature["ontology_terms"] = ontology_terms
                 features.append(feature)
                 # define cds
                 cds = {"id": cds_id, "location": location, "md5": md5, "parent_gene": fid, "parent_mrna": mrna_id,
