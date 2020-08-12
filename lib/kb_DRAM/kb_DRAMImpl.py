@@ -160,7 +160,7 @@ class kb_DRAM:
         genome_gbks_loc = os.path.join(output_dir, 'genbank.tar.gz')
         tar = tarfile.open(genome_gbks_loc, "w:gz")
         for name in os.listdir(os.path.join(output_dir, 'genbank')):
-            tar.add(name)
+            tar.add(os.path.join(output_dir, 'genbank', name))
         tar.close()
         output_files.append({
             'path': genome_gbks_loc,
