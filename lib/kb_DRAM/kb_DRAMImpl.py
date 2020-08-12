@@ -8,6 +8,7 @@ from skbio import read as read_sequence
 import time
 import datetime
 import re
+import tarfile
 
 from mag_annotator.database_processing import import_config, print_database_locations
 from mag_annotator.annotate_bins import annotate_bins
@@ -129,6 +130,13 @@ class kb_DRAM:
             'label': 'genes.faa',
             'description': 'Genes as amino acids predicted by DRAM with brief annotations'
         })
+        genes_gff_loc = os.path.join(output_dir, 'genes.gff')
+        output_files.append({
+            'path': genes_gff_loc,
+            'name': 'genes.gff',
+            'label': 'genes.gff',
+            'description': 'GFF file of all DRAM annotations'
+        })
         rrnas_loc = os.path.join(output_dir, 'rrnas.tsv')
         if os.path.exists(rrnas_loc):
             output_files.append({
@@ -149,6 +157,17 @@ class kb_DRAM:
             })
         else:
             trnas_loc = None
+        genome_gbks_loc = os.path.join(output_dir, 'genbank.tar.gz')
+        tar = tarfile.open(genome_gbks_loc, "w:gz")
+        for name in os.listdir(os.path.join(output_dir, 'genbank')):
+            tar.add(name)
+        tar.close()
+        output_files.append({
+            'path': genome_gbks_loc,
+            'name': 'genbank.tar.gz',
+            'label': 'genbank.tar.gz',
+            'description': 'Compressed folder of output genbank files?'
+        })
 
         # distill
         distill_output_dir = os.path.join(output_dir, 'distilled')
