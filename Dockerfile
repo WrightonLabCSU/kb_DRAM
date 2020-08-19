@@ -21,12 +21,11 @@ RUN echo $(which conda) && \
     conda update -q conda
 # Install dependencies and DRAM
 RUN conda install -q pandas scikit-bio prodigal "mmseqs2!=10.6d92c" hmmer "trnascan-se >=2" sqlalchemy barrnap "altair >=4" openpyxl networkx ruby parallel wget nose coverage && \
-#    pip install -q 'DRAM-bio>=1.0.4' jsonrpcbase
-    echo Hello world && \
-    pip install -q jsonrpcbase && \
-    git clone https://github.com/shafferm/DRAM.git && \
-    cd DRAM && \
-    pip install .
+    pip install -q 'DRAM-bio>=1.1.0' jsonrpcbase
+#    pip install -q jsonrpcbase && \
+#    git clone https://github.com/shafferm/DRAM.git && \
+#    cd DRAM && \
+#    pip install .
 # -----------------------------------------
 
 COPY ./ /kb/module
