@@ -17,11 +17,12 @@ ENV PATH=/root/miniconda/bin:$PATH
 RUN echo $(which conda) && \
     conda config --set always_yes yes && \
     conda config --add channels bioconda && \
-    conda config --add channels conda-forge && \
-    conda update -q conda
+    conda config --add channels conda-forge
 # Install dependencies and DRAM
-RUN conda install -q pandas scikit-bio prodigal "mmseqs2!=10.6d92c" hmmer "trnascan-se >=2" sqlalchemy barrnap "altair >=4" openpyxl networkx ruby parallel wget nose coverage && \
-    pip install -q 'DRAM-bio>=1.2.0' jsonrpcbase
+RUN wget -nv https://raw.githubusercontent.com/shafferm/DRAM/master/environment.yaml && \
+    conda env update -n base --file environment.yaml
+#RUN conda install -q pandas scikit-bio prodigal "mmseqs2!=10.6d92c" hmmer "trnascan-se >=2" sqlalchemy barrnap "altair >=4" openpyxl networkx ruby parallel wget nose coverage && \
+#    pip install -q 'DRAM-bio>=1.2.0' jsonrpcbase
 #    pip install -q jsonrpcbase && \
 #    git clone https://github.com/shafferm/DRAM.git && \
 #    cd DRAM && \
