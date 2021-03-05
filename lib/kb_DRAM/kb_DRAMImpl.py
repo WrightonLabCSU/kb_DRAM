@@ -10,7 +10,7 @@ import re
 import tarfile
 
 from mag_annotator import __version__ as dram_version
-from mag_annotator.database_processing import import_config, print_database_locations
+from mag_annotator.database_processing import import_config, set_database_paths, print_database_locations
 from mag_annotator.annotate_bins import annotate_bins
 from mag_annotator.summarize_genomes import summarize_genomes
 from mag_annotator.utils import remove_suffix
@@ -97,6 +97,8 @@ class kb_DRAM:
         # set DRAM database locations
         print(dram_version)
         import_config('/data/DRAM_databases/CONFIG')
+        # This is a hack to get around a bug in my database setup
+        set_database_paths(description_db_loc='/data/DRAM_databases/description_db.sqlite')
         print_database_locations()
 
         # get files
