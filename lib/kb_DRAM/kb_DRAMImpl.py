@@ -5,7 +5,6 @@ import os
 import hashlib
 import pandas as pd
 from skbio import read as read_sequence
-import time
 import datetime
 import re
 import tarfile
@@ -21,6 +20,7 @@ from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.DataFileUtilClient import DataFileUtil
 from installed_clients.GenomeFileUtilClient import GenomeFileUtil
+from installed_clients.annotation_ontology_apiServiceClient import annotation_ontology_api
 
 # TODO: Fix no pfam annotations bug
 #END_HEADER
@@ -106,7 +106,7 @@ class kb_DRAM:
         # get assembly refs from dram assigned genome names
         # TODO: rewrite annotate_bins to take optional list of fasta names and pass assembly refs as list
         assembly_ref_dict = {os.path.splitext(os.path.basename(remove_suffix(assembly_data['paths'][0], '.gz')))[0]:
-                                 assembly_ref for assembly_ref, assembly_data in assemblies.items()}
+                             assembly_ref for assembly_ref, assembly_data in assemblies.items()}
 
         # annotate bins
         annotate_bins(fasta_locs, output_dir, min_contig_size, low_mem_mode=True, rename_bins=False, keep_tmp_dir=False,
@@ -197,21 +197,10 @@ class kb_DRAM:
             'description': 'DRAM genome statistics table'
         })
 
-        # set up ontology info
-        time_string = str(
-            datetime.datetime.fromtimestamp(time.time()).strftime('%Y_%m_%d_%H_%M_%S'))
+        # generate genome files
         yml_text = open('/kb/module/kbase.yml').read()
         version = re.search("module-version:\n\W+(.+)\n", yml_text).group(1)
 
-        evidence = {"method": "DRAM Annotation (Evidence)",
-                    "method_version": version,
-                    "timestamp": time_string}
-        kegg_ontology_info = wsClient.get_objects([{'ref': "KBaseOntology/ko_ontology"}])[0]['info']
-        kegg_ontology_ref = '%s/%s/%s' % (kegg_ontology_info[6], kegg_ontology_info[0], kegg_ontology_info[4])
-        kegg_ontology_name = wsClient.get_objects([{'ref': "KBaseOntology/ko_ontology"}])[0]['data']['ontology']
-        kegg_ontology = wsClient.get_objects([{'ref': "KBaseOntology/ko_ontology"}])[0]['data']['term_hash']
-
-        # generate genome files
         annotations = pd.read_csv(annotations_tsv_loc, sep='\t', index_col=0)
         genes_nucl = {i.metadata['id']: i for i in read_sequence(genes_fna_loc, format='fasta')}
         genes_aa = {i.metadata['id']: i for i in read_sequence(genes_faa_loc, format='fasta')}
@@ -249,29 +238,16 @@ class kb_DRAM:
                 # get mrna and cds data
                 cds_id = fid + "_CDS"
                 mrna_id = fid + "_mRNA"
-                # get product and ontology info
-                ontology_terms = {}
+                # get product
                 if not pd.isna(row['kegg_hit']):
                     product = row['kegg_hit']
-                    if not pd.isna(row['kegg_id']):
-                        kegg_ontology_terms = {}
-                        for ko in row['kegg_id'].split(','):
-                            if ko in kegg_ontology:
-                                kegg_ontology_record = kegg_ontology[ko]
-                                kegg_ontology_term = {'id': kegg_ontology_record['id'],
-                                                      'evidence': [evidence],
-                                                      'term_name': kegg_ontology_record['name'],
-                                                      'ontology_ref': kegg_ontology_ref,
-                                                      'term_lineage': []}
-                                kegg_ontology_terms[kegg_ontology_record['id']] = kegg_ontology_term
-                        ontology_terms[kegg_ontology_name] = kegg_ontology_terms
                 else:
                     product = ''
                 # define feature
                 feature = {"id": fid, "location": location, "type": "gene", "aliases": aliases, "md5": md5,
                            "dna_sequence": dna, "dna_sequence_length": len(dna), "protein_translation": prot,
                            "protein_translation_length": len(prot), "cdss": [cds_id], "mrans": [mrna_id],
-                           "function": product, "ontology_terms": ontology_terms}
+                           "function": product, "ontology_terms": {}}
                 features.append(feature)
                 # define cds
                 cds = {"id": cds_id, "location": location, "md5": md5, "parent_gene": fid, "parent_mrna": mrna_id,
@@ -297,21 +273,56 @@ class kb_DRAM:
                       "dna_size": dna_size,
                       "reference_annotation": 0}
 
+            genome_object_name = '%s_genome' % genome_name
             info = genome_util.save_one_genome({"workspace": params["workspace_name"],
-                                                "name": '%s_genome' % genome_name,
+                                                "name": genome_object_name,
                                                 "data": genome,
                                                 "provenance": ctx.provenance()})["info"]
             genome_ref = '%s/%s/%s' % (info[6], info[0], info[4])
-            genome_set_elements['%s_genome' % genome_name] = dict()
-            genome_set_elements['%s_genome' % genome_name]['ref'] = genome_ref
+            genome_set_elements[genome_object_name] = dict()
+            genome_set_elements[genome_object_name]['ref'] = genome_ref
             output_objects.append({"ref": genome_ref,
                                    "description": 'Annotated Genome'})
             genome_ref_list.append(genome_ref)
 
+            # add ontology terms
+            # TODO: also add EC and other ontologies
+            anno_api = annotation_ontology_api()
+
+            kegg_ontology_terms = dict()
+            for gene, row in annotations:
+                kegg_terms = row['kegg_id'].split(',')
+                kegg_ontology_terms[gene] = [{'term': i} for i in kegg_terms]
+
+            timestamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+            kegg_ontology = {
+                'event_id': params['description'],
+                'description': params['description'],
+                'ontology_id': 'KO',
+                'method': 'DRAM',  # from above
+                'method_version': version,
+                "timestamp": timestamp,
+                'ontology_terms': kegg_ontology_terms,
+                'gene_count': int(annotations['gene'].nunique()),  # not used in the api
+                'term_count': int(annotations['term'].nunique())  # not used in the api
+            }
+
+            add_ontology_results = anno_api.add_annotation_ontology_events({
+                "input_ref": genome_ref,
+                "output_name": genome_object_name,
+                "input_workspace": params['workspace_name'],
+                "workspace-url": self.workspaceURL,
+                "events": [kegg_ontology],
+                "timestamp": timestamp,
+                "output_workspace": params['workspace_name'],
+                "save": 1
+            })
+
         # make genome set
-        provenance = [{}]
         if 'provenance' in ctx:
             provenance = ctx['provenance']
+        else:
+            provenance = [{}]
         # add additional info to provenance here, in this case the input data object reference
         provenance[0]['input_ws_objects'] = []
         for ass_ref in genome_ref_list:
