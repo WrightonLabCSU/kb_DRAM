@@ -10,6 +10,7 @@ import datetime
 import re
 import tarfile
 
+from mag_annotator import __version__ as dram_version
 from mag_annotator.database_processing import import_config, print_database_locations
 from mag_annotator.annotate_bins import annotate_bins
 from mag_annotator.summarize_genomes import summarize_genomes
@@ -94,6 +95,7 @@ class kb_DRAM:
         report_util = KBaseReport(self.callback_url)
 
         # set DRAM database locations
+        print(dram_version)
         import_config('/data/DRAM_databases/CONFIG')
         print_database_locations()
 
