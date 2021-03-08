@@ -292,7 +292,7 @@ class kb_DRAM:
             anno_api = annotation_ontology_api()
 
             kegg_ontology_terms = dict()
-            for gene, row in annotations:
+            for gene, row in annotations.iterrows():
                 kegg_terms = row['kegg_id'].split(',')
                 kegg_ontology_terms[gene] = [{'term': i} for i in kegg_terms]
 
