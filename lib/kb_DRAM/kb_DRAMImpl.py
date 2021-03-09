@@ -301,8 +301,8 @@ class kb_DRAM:
 
             timestamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
             kegg_ontology = {
-                'event_id': params['description'],
-                'description': params['description'],
+                'event_id': params['desc'],
+                'description': params['desc'],
                 'ontology_id': 'KO',
                 'method': 'DRAM',  # from above
                 'method_version': version,
