@@ -292,9 +292,12 @@ class kb_DRAM:
             anno_api = annotation_ontology_api()
 
             kegg_ontology_terms = dict()
+            terms = list()
             for gene, row in annotations.iterrows():
-                kegg_terms = row['kegg_id'].split(',')
-                kegg_ontology_terms[gene] = [{'term': i} for i in kegg_terms]
+                if not pd.isna(row['kegg_id']):
+                    kegg_terms = row['kegg_id'].split(',')
+                    terms += kegg_terms
+                    kegg_ontology_terms[gene] = [{'term': i} for i in kegg_terms]
 
             timestamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
             kegg_ontology = {
@@ -305,8 +308,8 @@ class kb_DRAM:
                 'method_version': version,
                 "timestamp": timestamp,
                 'ontology_terms': kegg_ontology_terms,
-                'gene_count': int(annotations['gene'].nunique()),  # not used in the api
-                'term_count': int(annotations['term'].nunique())  # not used in the api
+                'gene_count': len(annotations),  # not used in the api
+                'term_count': len(set(terms))  # not used in the api
             }
 
             add_ontology_results = anno_api.add_annotation_ontology_events({
