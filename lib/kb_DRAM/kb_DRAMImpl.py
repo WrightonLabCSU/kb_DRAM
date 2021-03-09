@@ -6,8 +6,8 @@ import hashlib
 import pandas as pd
 from skbio import read as read_sequence
 import datetime
-import re
 import tarfile
+import yaml
 
 from mag_annotator import __version__ as dram_version
 from mag_annotator.database_processing import import_config, set_database_paths, print_database_locations
@@ -200,8 +200,9 @@ class kb_DRAM:
         })
 
         # generate genome files
-        yml_text = open('/kb/module/kbase.yml').read()
-        version = re.search("module-version:\n\W+(.+)\n", yml_text).group(1)
+        with open("/kb/module/kbase.yml", 'r') as stream:
+            data_loaded = yaml.load(stream)
+        version = str(data_loaded['module-version'])
 
         annotations = pd.read_csv(annotations_tsv_loc, sep='\t', index_col=0)
         genes_nucl = {i.metadata['id']: i for i in read_sequence(genes_fna_loc, format='fasta')}
