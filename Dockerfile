@@ -20,6 +20,7 @@ RUN echo $(which conda) && \
     conda config --add channels conda-forge
 # Install dependencies and DRAM
 RUN wget -nv https://raw.githubusercontent.com/shafferm/DRAM/master/environment.yaml && \
+    conda install -q pyyaml && \
     conda env update -n base --file environment.yaml
 RUN pip install jsonrpcbase
 #RUN conda install -q pandas scikit-bio prodigal "mmseqs2!=10.6d92c" hmmer "trnascan-se >=2" sqlalchemy barrnap "altair >=4" openpyxl networkx ruby parallel wget nose coverage && \
