@@ -290,7 +290,7 @@ class kb_DRAM:
 
             # add ontology terms
             # TODO: also add EC and other ontologies
-            anno_api = annotation_ontology_api()
+            anno_api = annotation_ontology_api(service_ver="beta")
 
             kegg_ontology_terms = dict()
             terms = list()
