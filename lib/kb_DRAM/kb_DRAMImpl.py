@@ -132,7 +132,7 @@ class kb_DRAM:
         anno_api = annotation_ontology_api(service_ver="beta")
         ontology_events = add_ontology_terms(annotations, params['desc'], version, params['workspace_name'],
                                              self.workspaceURL, genome_ref_dict)
-        anno_api.add_annotation_ontology_events([i for i in ontology_events])
+        [anno_api.add_annotation_ontology_events(i) for i in ontology_events]
 
         # make genome set
         if 'provenance' in ctx:
