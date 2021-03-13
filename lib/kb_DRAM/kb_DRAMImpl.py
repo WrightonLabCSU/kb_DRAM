@@ -2,17 +2,11 @@
 #BEGIN_HEADER
 import logging
 import os
-import hashlib
 import pandas as pd
-from skbio import read as read_sequence
-import datetime
-import tarfile
 import yaml
 
 from mag_annotator import __version__ as dram_version
 from mag_annotator.database_processing import import_config, set_database_paths, print_database_locations
-from mag_annotator.annotate_bins import annotate_bins
-from mag_annotator.summarize_genomes import summarize_genomes
 from mag_annotator.utils import remove_suffix
 
 from installed_clients.WorkspaceClient import Workspace as workspaceService
@@ -21,6 +15,8 @@ from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.DataFileUtilClient import DataFileUtil
 from installed_clients.GenomeFileUtilClient import GenomeFileUtil
 from installed_clients.annotation_ontology_apiServiceClient import annotation_ontology_api
+
+from .utils.kb_DRAM_Util import annotate_contigs_w_dram, add_ontology_terms, generate_genomes
 
 # TODO: Fix no pfam annotations bug
 #END_HEADER
@@ -82,9 +78,11 @@ class kb_DRAM:
             raise ValueError('Min contig size must be a non-negative integer')
 
         # setup params
+        with open("/kb/module/kbase.yml", 'r') as stream:
+            data_loaded = yaml.load(stream)
+        version = str(data_loaded['module-version'])
         min_contig_size = params['min_contig_size']
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
-        output_files = []
         output_objects = []
 
         # create Util objects
@@ -110,219 +108,31 @@ class kb_DRAM:
         assembly_ref_dict = {os.path.splitext(os.path.basename(remove_suffix(assembly_data['paths'][0], '.gz')))[0]:
                              assembly_ref for assembly_ref, assembly_data in assemblies.items()}
 
-        # annotate bins
-        annotate_bins(fasta_locs, output_dir, min_contig_size, low_mem_mode=True, rename_bins=False, keep_tmp_dir=False,
-                      threads=4, verbose=False)
-        annotations_tsv_loc = os.path.join(output_dir, 'annotations.tsv')
-        output_files.append({
-            'path': annotations_tsv_loc,
-            'name': 'annotations.tsv',
-            'label': 'annotations.tsv',
-            'description': 'DRAM annotations in a tab separate table format'
-        })
-        genes_fna_loc = os.path.join(output_dir, 'genes.fna')
-        output_files.append({
-            'path': genes_fna_loc,
-            'name': 'genes.fna',
-            'label': 'genes.fna',
-            'description': 'Genes as nucleotides predicted by DRAM with brief annotations'
-        })
-        genes_faa_loc = os.path.join(output_dir, 'genes.faa')
-        output_files.append({
-            'path': genes_faa_loc,
-            'name': 'genes.faa',
-            'label': 'genes.faa',
-            'description': 'Genes as amino acids predicted by DRAM with brief annotations'
-        })
-        genes_gff_loc = os.path.join(output_dir, 'genes.gff')
-        output_files.append({
-            'path': genes_gff_loc,
-            'name': 'genes.gff',
-            'label': 'genes.gff',
-            'description': 'GFF file of all DRAM annotations'
-        })
-        rrnas_loc = os.path.join(output_dir, 'rrnas.tsv')
-        if os.path.exists(rrnas_loc):
-            output_files.append({
-                'path': rrnas_loc,
-                'name': 'rrnas.tsv',
-                'label': 'rrnas.tsv',
-                'description': 'Tab separated table of rRNAs as detected by barrnap'
-            })
-        else:
-            rrnas_loc = None
-        trnas_loc = os.path.join(output_dir, 'trnas.tsv')
-        if os.path.exists(trnas_loc):
-            output_files.append({
-                'path': trnas_loc,
-                'name': 'trnas.tsv',
-                'label': 'trnas.tsv',
-                'description': 'Tab separated table of tRNAs as detected by tRNAscan-SE'
-            })
-        else:
-            trnas_loc = None
-        genome_gbks_loc = os.path.join(output_dir, 'genbank.tar.gz')
-        tar = tarfile.open(genome_gbks_loc, "w:gz")
-        for name in os.listdir(os.path.join(output_dir, 'genbank')):
-            tar.add(os.path.join(output_dir, 'genbank', name))
-        tar.close()
-        output_files.append({
-            'path': genome_gbks_loc,
-            'name': 'genbank.tar.gz',
-            'label': 'genbank.tar.gz',
-            'description': 'Compressed folder of output genbank files?'
-        })
-
-        # distill
-        distill_output_dir = os.path.join(output_dir, 'distilled')
-        summarize_genomes(annotations_tsv_loc, trnas_loc, rrnas_loc, output_dir=distill_output_dir,
-                          groupby_column='fasta')
-        product_tsv_loc = os.path.join(distill_output_dir, 'product.tsv')
-        output_files.append({
-            'path': product_tsv_loc,
-            'name': 'product.tsv',
-            'label': 'product.tsv',
-            'description': 'DRAM product in tabular format'
-        })
-        metabolism_summary_loc = os.path.join(distill_output_dir, 'metabolism_summary.xlsx')
-        output_files.append({
-            'path': metabolism_summary_loc,
-            'name': 'metabolism_summary.xlsx',
-            'label': 'metabolism_summary.xlsx',
-            'description': 'DRAM metabolism summary tables'
-        })
-        genome_stats_loc = os.path.join(distill_output_dir, 'genome_stats.tsv')
-        output_files.append({
-            'path': genome_stats_loc,
-            'name': 'genome_stats.tsv',
-            'label': 'genome_stats.tsv',
-            'description': 'DRAM genome statistics table'
-        })
+        # annotate and distill with DRAM
+        dram_file_locs, output_files = annotate_contigs_w_dram(fasta_locs, output_dir, min_contig_size)
 
         # generate genome files
-        with open("/kb/module/kbase.yml", 'r') as stream:
-            data_loaded = yaml.load(stream)
-        version = str(data_loaded['module-version'])
+        annotations = pd.read_csv(dram_file_locs['annotations'], sep='\t', index_col=0)
+        genome_objects = generate_genomes(annotations, dram_file_locs['genes_fna'], dram_file_locs['genes_faa'],
+                                          assembly_ref_dict, assemblies, params["workspace_name"], ctx.provenance())
 
-        annotations = pd.read_csv(annotations_tsv_loc, sep='\t', index_col=0)
-        genes_nucl = {i.metadata['id']: i for i in read_sequence(genes_fna_loc, format='fasta')}
-        genes_aa = {i.metadata['id']: i for i in read_sequence(genes_faa_loc, format='fasta')}
-        genome_ref_list = list()
+        genome_ref_dict = dict()
         genome_set_elements = dict()
-        for genome_name, genome_annotations in annotations.groupby('fasta'):
-            # set scientific name, domain and genetic code
-            if 'bin_taxonomy' in genome_annotations.columns:  # assuming gtdb taxa strings
-                scientific_name = genome_annotations['bin_taxonomy'].iloc[0]  # not really the scientific name, whatever
-                domain = scientific_name.split[';'][0]
-            else:
-                scientific_name = 'Unknown'
-                domain = 'Unknown'
-            # get assembly information
-            assembly_ref = assembly_ref_dict[genome_name]
-            sequence = ''.join([str(i) for i in read_sequence(assemblies[assembly_ref]['paths'][0], format='fasta')])
-            sequence = sequence.upper()
-            dna_size = len(sequence)
-            gc_content = sum([(i == 'G') or (i == 'C') for i in sequence]) / dna_size
-            # get ORF features
-            cdss = []
-            mrnas = []
-            features = []
-            for feature_name, row in genome_annotations.iterrows():
-                # get general gene information
-                fid = feature_name
-                strandedness = '+' if row['strandedness'] == 1 else '-'
-                location = [[row['scaffold'], row['start_position'], strandedness,
-                             row['end_position']-row['start_position']]]
-                aliases = []
-                # get gene sequence
-                dna = str(genes_nucl[feature_name])
-                md5 = hashlib.md5(dna.encode()).hexdigest()
-                prot = str(genes_aa[feature_name])
-                # get mrna and cds data
-                cds_id = fid + "_CDS"
-                mrna_id = fid + "_mRNA"
-                # get product
-                if not pd.isna(row['kegg_hit']):
-                    product = row['kegg_hit']
-                else:
-                    product = ''
-                # define feature
-                feature = {"id": fid, "location": location, "type": "gene", "aliases": aliases, "md5": md5,
-                           "dna_sequence": dna, "dna_sequence_length": len(dna), "protein_translation": prot,
-                           "protein_translation_length": len(prot), "cdss": [cds_id], "mrans": [mrna_id],
-                           "function": product, "ontology_terms": {}}
-                features.append(feature)
-                # define cds
-                cds = {"id": cds_id, "location": location, "md5": md5, "parent_gene": fid, "parent_mrna": mrna_id,
-                       "function": (product if product else ""), "ontology_terms": {}, "protein_translation": prot,
-                       "protein_translation_length": len(prot), "aliases": aliases}
-                cdss.append(cds)
-                # define mrna
-                mrna = {"id": mrna_id, "location": location, "md5": md5,
-                        "parent_gene": fid, "cds": cds_id}
-                mrnas.append(mrna)
-            # TODO: get rRNA features
-            # TODO: get tRNA features
-            genome = {"id": "Unknown",
-                      "features": features,
-                      "scientific_name": scientific_name,
-                      "domain": domain,
-                      "genetic_code": 0,  # might be able to get this from prodigal calls
-                      "assembly_ref": assembly_ref,
-                      "cdss": cdss,
-                      "mrnas": mrnas,
-                      "source": "DRAM annotation pipeline",
-                      "gc_content": gc_content,
-                      "dna_size": dna_size,
-                      "reference_annotation": 0}
-
-            genome_object_name = '%s_genome' % genome_name
-            info = genome_util.save_one_genome({"workspace": params["workspace_name"],
-                                                "name": genome_object_name,
-                                                "data": genome,
-                                                "provenance": ctx.provenance()})["info"]
+        for genome_object in genome_objects:
+            info = genome_util.save_one_genome(genome_object)["info"]
             genome_ref = '%s/%s/%s' % (info[6], info[0], info[4])
+            genome_object_name = genome_object["name"]
             genome_set_elements[genome_object_name] = dict()
             genome_set_elements[genome_object_name]['ref'] = genome_ref
             output_objects.append({"ref": genome_ref,
                                    "description": 'Annotated Genome'})
-            genome_ref_list.append(genome_ref)
+            genome_ref_dict[genome_object_name] = genome_ref
 
-            # add ontology terms
-            # TODO: also add EC and other ontologies
-            anno_api = annotation_ontology_api(service_ver="beta")
-
-            kegg_ontology_terms = dict()
-            terms = list()
-            for gene, row in annotations.iterrows():
-                if not pd.isna(row['kegg_id']):
-                    kegg_terms = row['kegg_id'].split(',')
-                    terms += kegg_terms
-                    kegg_ontology_terms[gene] = [{'term': i} for i in kegg_terms]
-
-            timestamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-            kegg_ontology = {
-                'event_id': params['desc'],
-                'description': params['desc'],
-                'ontology_id': 'KO',
-                'method': 'DRAM',  # from above
-                'method_version': version,
-                "timestamp": timestamp,
-                'ontology_terms': kegg_ontology_terms,
-                'gene_count': len(annotations),  # not used in the api
-                'term_count': len(set(terms))  # not used in the api
-            }
-
-            add_ontology_results = anno_api.add_annotation_ontology_events({
-                "input_ref": genome_ref,
-                "output_name": genome_object_name,
-                "input_workspace": params['workspace_name'],
-                "workspace-url": self.workspaceURL,
-                "events": [kegg_ontology],
-                "timestamp": timestamp,
-                "output_workspace": params['workspace_name'],
-                "save": 1
-            })
+        # add ontology terms
+        anno_api = annotation_ontology_api(service_ver="beta")
+        ontology_events = add_ontology_terms(annotations, params['desc'], version, params['workspace_name'],
+                                             self.workspaceURL, genome_ref_dict)
+        anno_api.add_annotation_ontology_events([i for i in ontology_events])
 
         # make genome set
         if 'provenance' in ctx:
@@ -331,7 +141,7 @@ class kb_DRAM:
             provenance = [{}]
         # add additional info to provenance here, in this case the input data object reference
         provenance[0]['input_ws_objects'] = []
-        for ass_ref in genome_ref_list:
+        for ass_ref in genome_ref_dict.values():
             provenance[0]['input_ws_objects'].append(ass_ref)
         provenance[0]['service'] = 'kb_SetUtilities'
         provenance[0]['method'] = 'KButil_Batch_Create_GenomeSet'
@@ -354,7 +164,7 @@ class kb_DRAM:
         # generate report
         html_file = os.path.join(output_dir, 'product.html')
         # move html to main directory uploaded to shock so kbase can find it
-        os.rename(os.path.join(distill_output_dir, 'product.html'), html_file)
+        os.rename(dram_file_locs['distill_product'], html_file)
         report_shock_id = datafile_util.file_to_shock({
             'file_path': output_dir,
             'pack': 'zip'
