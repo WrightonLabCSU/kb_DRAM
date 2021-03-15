@@ -7,6 +7,8 @@ import yaml
 
 from mag_annotator import __version__ as dram_version
 from mag_annotator.database_processing import import_config, set_database_paths, print_database_locations
+from mag_annotator.annotate_bins import annotate_bins, annotate_called_genes
+from mag_annotator.summarize_genomes import summarize_genomes
 from mag_annotator.utils import remove_suffix
 
 from installed_clients.WorkspaceClient import Workspace as workspaceService
@@ -15,8 +17,9 @@ from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.DataFileUtilClient import DataFileUtil
 from installed_clients.GenomeFileUtilClient import GenomeFileUtil
 from installed_clients.annotation_ontology_apiServiceClient import annotation_ontology_api
+from installed_clients.KBaseDataObjectToFileUtilsClient import KBaseDataObjectToFileUtils
 
-from .utils.kb_DRAM_Util import annotate_contigs_w_dram, add_ontology_terms, generate_genomes
+from .utils.kb_DRAM_Util import get_annotation_files, get_distill_files, generate_genomes, add_ontology_terms
 
 # TODO: Fix no pfam annotations bug
 #END_HEADER
@@ -105,16 +108,24 @@ class kb_DRAM:
         fasta_locs = [assembly_data['paths'][0] for assembly_ref, assembly_data in assemblies.items()]
         # get assembly refs from dram assigned genome names
         # TODO: rewrite annotate_bins to take optional list of fasta names and pass assembly refs as list
+        # TODO: something to get rid of the very ugly and confusing assembly_ref_dict
         assembly_ref_dict = {os.path.splitext(os.path.basename(remove_suffix(assembly_data['paths'][0], '.gz')))[0]:
                              assembly_ref for assembly_ref, assembly_data in assemblies.items()}
 
         # annotate and distill with DRAM
-        dram_file_locs, output_files = annotate_contigs_w_dram(fasta_locs, output_dir, min_contig_size)
+        annotate_bins(fasta_locs, output_dir, min_contig_size, low_mem_mode=True, rename_bins=False, keep_tmp_dir=False,
+                      threads=4, verbose=False)
+        output_files = get_annotation_files(output_dir)
+        distill_output_dir = os.path.join(output_dir, 'distilled')
+        summarize_genomes(output_files['annotations']['path'], output_files['annotations']['trnas'],
+                          output_files['rrnas']['path'], output_dir=distill_output_dir, groupby_column='fasta')
+        output_files = get_distill_files(distill_output_dir, output_files)
 
         # generate genome files
-        annotations = pd.read_csv(dram_file_locs['annotations'], sep='\t', index_col=0)
-        genome_objects = generate_genomes(annotations, dram_file_locs['genes_fna'], dram_file_locs['genes_faa'],
-                                          assembly_ref_dict, assemblies, params["workspace_name"], ctx.provenance())
+        annotations = pd.read_csv(output_files['annotations']['path'], sep='\t', index_col=0)
+        genome_objects = generate_genomes(annotations, output_files['genes_fna']['path'],
+                                          output_files['genes_faa']['path'], assembly_ref_dict, assemblies,
+                                          params["workspace_name"], ctx.provenance())
 
         genome_ref_dict = dict()
         genome_set_elements = dict()
@@ -164,7 +175,7 @@ class kb_DRAM:
         # generate report
         html_file = os.path.join(output_dir, 'product.html')
         # move html to main directory uploaded to shock so kbase can find it
-        os.rename(dram_file_locs['distill_product'], html_file)
+        os.rename(os.path.join(distill_output_dir, 'product.html'), html_file)
         report_shock_id = datafile_util.file_to_shock({
             'file_path': output_dir,
             'pack': 'zip'
@@ -179,7 +190,8 @@ class kb_DRAM:
                                                      'workspace_name': params['workspace_name'],
                                                      'html_links': html_report,
                                                      'direct_html_link_index': 0,
-                                                     'file_links': output_files,
+                                                     'file_links': [value for key, value in output_files.items()
+                                                                    if value['path'] is not None],
                                                      'objects_created': output_objects,
                                                      })
         output = {
@@ -204,6 +216,95 @@ class kb_DRAM:
         # ctx is the context object
         # return variables are: output
         #BEGIN run_kb_dram_annotate_genome
+        # validate inputs
+        if not isinstance(params['genome_input_ref'], str) or not len(params['genome_input_ref']):
+            raise ValueError('Pass in a valid genome reference string')
+
+        # setup
+        with open("/kb/module/kbase.yml", 'r') as stream:
+            data_loaded = yaml.load(stream)
+        version = str(data_loaded['module-version'])
+        genome_input_ref = params['genome_input_ref']
+        output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
+
+        # create Util objects
+        wsClient = workspaceService(self.workspaceURL, token=ctx['token'])
+        genome_util = GenomeFileUtil(self.callback_url)
+        datafile_util = DataFileUtil(self.callback_url)
+        report_util = KBaseReport(self.callback_url)
+
+        # set DRAM database locations
+        print(dram_version)
+        import_config('/data/DRAM_databases/CONFIG')
+        # This is a hack to get around a bug in my database setup
+        set_database_paths(description_db_loc='/data/DRAM_databases/description_db.sqlite')
+        print_database_locations()
+
+        # get genomes
+        genome_input_type = wsClient.get_object_info_new([{'ref': genome_input_ref}])[0][2]
+        if 'GenomeSet' in genome_input_type:
+            faa_objects = KBaseDataObjectToFileUtils.GenomeSetToFASTA({"genomeSet_ref": genome_input_ref,
+                                                                       "file": 'DRAM',
+                                                                       "residue_type": 'P',
+                                                                       "merge_fasta_files": False})
+            # DRAM needs a fasta file ending so need to move to add ending
+            faa_locs = list()
+            genome_ref_dict = {}
+            for fasta_path in faa_objects['fasta_file_path_list']:
+                new_path = '%s.faa' % fasta_path
+                os.rename(fasta_path, new_path)
+                faa_locs.append(new_path)
+                file_name = os.path.splitext(os.path.basename(remove_suffix(new_path, '.gz')))[0]
+                genome_ref = file_name.split('.')[1].replace('-', '/')
+                genome_ref_dict[file_name] = genome_ref
+        else:
+            # this makes the names match if you are doing a genome or genomeSet
+            faa_file = 'DRAM.%s.faa' % genome_input_ref.replace('/', '-')
+            faa_locs = KBaseDataObjectToFileUtils.GenomeToFASTA({"genome_ref": genome_input_ref,
+                                                                 "file": faa_file,
+                                                                 "residue_type": 'P'})
+            genome_ref_dict = {genome_input_ref: faa_file}
+
+        # annotate and distill with DRAM
+        annotate_called_genes(faa_locs, output_dir, low_mem_mode=True, keep_tmp_dir=False, threads=4, verbose=False)
+        output_files = get_annotation_files(output_dir)
+        distill_output_dir = os.path.join(output_dir, 'distilled')
+        summarize_genomes(output_files['annotations']['path'], output_files['annotations']['trnas'],
+                          output_files['rrnas']['path'], output_dir=distill_output_dir, groupby_column='fasta')
+        output_files = get_distill_files(distill_output_dir, output_files)
+
+        # add ontology terms
+        annotations = pd.read_csv(output_files['annotations']['path'], sep='\t', index_col=0)
+        anno_api = annotation_ontology_api(service_ver="beta")
+        ontology_events = add_ontology_terms(annotations, params['desc'], version, params['workspace_name'],
+                                             self.workspaceURL, genome_ref_dict)
+        [anno_api.add_annotation_ontology_events(i) for i in ontology_events]
+
+        # generate report
+        html_file = os.path.join(output_dir, 'product.html')
+        # move html to main directory uploaded to shock so kbase can find it
+        os.rename(os.path.join(distill_output_dir, 'product.html'), html_file)
+        report_shock_id = datafile_util.file_to_shock({
+            'file_path': output_dir,
+            'pack': 'zip'
+        })['shock_id']
+        html_report = [{
+            'shock_id': report_shock_id,
+            'name': os.path.basename(html_file),
+            'label': os.path.basename(html_file),
+            'description': 'DRAM product.'
+        }]
+        report = report_util.create_extended_report({'message': 'Here are the results from your DRAM run.',
+                                                     'workspace_name': params['workspace_name'],
+                                                     'html_links': html_report,
+                                                     'direct_html_link_index': 0,
+                                                     'file_links': [value for key, value in output_files.items()
+                                                                    if value['path'] is not None],
+                                                     })
+        output = {
+            'report_name': report['name'],
+            'report_ref': report['ref'],
+        }
         #END run_kb_dram_annotate_genome
 
         # At some point might do deeper type checking...

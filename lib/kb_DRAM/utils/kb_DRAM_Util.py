@@ -5,108 +5,82 @@ import datetime
 from skbio import read as read_sequence
 import hashlib
 
-from mag_annotator.annotate_bins import annotate_bins
-from mag_annotator.summarize_genomes import summarize_genomes
 
+def get_annotation_files(output_dir, output_files=None):
+    if output_files is None:
+        output_files = dict()
 
-def annotate_contigs_w_dram(fasta_locs, output_dir, min_contig_size):
-    output_files = list()
-
-    # annotate bins
-    annotate_bins(fasta_locs, output_dir, min_contig_size, low_mem_mode=True, rename_bins=False, keep_tmp_dir=False,
-                  threads=4, verbose=False)
     annotations_tsv_loc = os.path.join(output_dir, 'annotations.tsv')
-    output_files.append({
-        'path': annotations_tsv_loc,
-        'name': 'annotations.tsv',
-        'label': 'annotations.tsv',
-        'description': 'DRAM annotations in a tab separate table format'
-    })
+    output_files['annotations'] = {'path': annotations_tsv_loc,
+                                   'name': 'annotations.tsv',
+                                   'label': 'annotations.tsv',
+                                   'description': 'DRAM annotations in a tab separate table format'}
     genes_fna_loc = os.path.join(output_dir, 'genes.fna')
-    output_files.append({
-        'path': genes_fna_loc,
-        'name': 'genes.fna',
-        'label': 'genes.fna',
-        'description': 'Genes as nucleotides predicted by DRAM with brief annotations'
-    })
+    if not os.path.exists(genes_fna_loc):
+        genes_fna_loc = None
+    output_files['genes_fna'] = {'path': genes_fna_loc,
+                                 'name': 'genes.fna',
+                                 'label': 'genes.fna',
+                                 'description': 'Genes as nucleotides predicted by DRAM with brief annotations'}
     genes_faa_loc = os.path.join(output_dir, 'genes.faa')
-    output_files.append({
-        'path': genes_faa_loc,
-        'name': 'genes.faa',
-        'label': 'genes.faa',
-        'description': 'Genes as amino acids predicted by DRAM with brief annotations'
-    })
+    output_files['genes_faa'] = {'path': genes_faa_loc,
+                                 'name': 'genes.faa',
+                                 'label': 'genes.faa',
+                                 'description': 'Genes as amino acids predicted by DRAM with brief annotations'}
     genes_gff_loc = os.path.join(output_dir, 'genes.gff')
-    output_files.append({
-        'path': genes_gff_loc,
-        'name': 'genes.gff',
-        'label': 'genes.gff',
-        'description': 'GFF file of all DRAM annotations'
-    })
+    if not os.path.exists(genes_gff_loc):
+        genes_gff_loc = None
+    output_files['genes_gff'] = {'path': genes_gff_loc,
+                                 'name': 'genes.gff',
+                                 'label': 'genes.gff',
+                                 'description': 'GFF file of all DRAM annotations'}
     rrnas_loc = os.path.join(output_dir, 'rrnas.tsv')
-    if os.path.exists(rrnas_loc):
-        output_files.append({
-            'path': rrnas_loc,
-            'name': 'rrnas.tsv',
-            'label': 'rrnas.tsv',
-            'description': 'Tab separated table of rRNAs as detected by barrnap'
-        })
-    else:
+    if not os.path.exists(rrnas_loc):
         rrnas_loc = None
+    output_files['rrnas'] = {'path': rrnas_loc,
+                             'name': 'rrnas.tsv',
+                             'label': 'rrnas.tsv',
+                             'description': 'Tab separated table of rRNAs as detected by barrnap'}
     trnas_loc = os.path.join(output_dir, 'trnas.tsv')
     if os.path.exists(trnas_loc):
-        output_files.append({
-            'path': trnas_loc,
-            'name': 'trnas.tsv',
-            'label': 'trnas.tsv',
-            'description': 'Tab separated table of tRNAs as detected by tRNAscan-SE'
-        })
-    else:
         trnas_loc = None
-    genome_gbks_loc = os.path.join(output_dir, 'genbank.tar.gz')
-    tar = tarfile.open(genome_gbks_loc, "w:gz")
-    for name in os.listdir(os.path.join(output_dir, 'genbank')):
-        tar.add(os.path.join(output_dir, 'genbank', name))
-    tar.close()
-    output_files.append({
-        'path': genome_gbks_loc,
-        'name': 'genbank.tar.gz',
-        'label': 'genbank.tar.gz',
-        'description': 'Compressed folder of output genbank files?'
-    })
+    output_files['trnas'] = {'path': trnas_loc,
+                             'name': 'trnas.tsv',
+                             'label': 'trnas.tsv',
+                             'description': 'Tab separated table of tRNAs as detected by tRNAscan-SE'}
+    gbks_loc = os.path.join(output_dir, 'genbank')
+    if os.path.exists(gbks_loc):
+        genome_gbks_loc = os.path.join(output_dir, 'genbank.tar.gz')
+        tar = tarfile.open(genome_gbks_loc, "w:gz")
+        for name in os.listdir(gbks_loc):
+            tar.add(os.path.join(output_dir, 'genbank', name))
+        tar.close()
+        output_files['gbks'] = {'path': genome_gbks_loc,
+                                'name': 'genbank.tar.gz',
+                                'label': 'genbank.tar.gz',
+                                'description': 'Compressed folder of output genbank files?'}
+    return output_files
 
-    # distill
-    distill_output_dir = os.path.join(output_dir, 'distilled')
-    summarize_genomes(annotations_tsv_loc, trnas_loc, rrnas_loc, output_dir=distill_output_dir,
-                      groupby_column='fasta')
+
+def get_distill_files(distill_output_dir, output_files=None):
+    if output_files is None:
+        output_files = dict()
     product_tsv_loc = os.path.join(distill_output_dir, 'product.tsv')
-    output_files.append({
-        'path': product_tsv_loc,
-        'name': 'product.tsv',
-        'label': 'product.tsv',
-        'description': 'DRAM product in tabular format'
-    })
+    output_files['product_tsv'] = {'path': product_tsv_loc,
+                                   'name': 'product.tsv',
+                                   'label': 'product.tsv',
+                                   'description': 'DRAM product in tabular format'}
     metabolism_summary_loc = os.path.join(distill_output_dir, 'metabolism_summary.xlsx')
-    output_files.append({
-        'path': metabolism_summary_loc,
-        'name': 'metabolism_summary.xlsx',
-        'label': 'metabolism_summary.xlsx',
-        'description': 'DRAM metabolism summary tables'
-    })
+    output_files['metabolism_summary'] = {'path': metabolism_summary_loc,
+                                          'name': 'metabolism_summary.xlsx',
+                                          'label': 'metabolism_summary.xlsx',
+                                          'description': 'DRAM metabolism summary tables'}
     genome_stats_loc = os.path.join(distill_output_dir, 'genome_stats.tsv')
-    output_files.append({
-        'path': genome_stats_loc,
-        'name': 'genome_stats.tsv',
-        'label': 'genome_stats.tsv',
-        'description': 'DRAM genome statistics table'
-    })
-
-    dram_file_locs = {'annotations': annotations_tsv_loc,
-                      'genes_faa': genes_faa_loc,
-                      'genes_fna': genes_fna_loc,
-                      'distill_product': os.path.join(distill_output_dir, 'product.html')}
-
-    return dram_file_locs, output_files
+    output_files['genome_stats'] = {'path': genome_stats_loc,
+                                    'name': 'genome_stats.tsv',
+                                    'label': 'genome_stats.tsv',
+                                    'description': 'DRAM genome statistics table'}
+    return output_files
 
 
 def generate_genomes(annotations, genes_nucl_loc, genes_aa_loc, assembly_ref_dict, assemblies, workspace, provenance):
@@ -232,3 +206,8 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
 
         ontology_events.append(ontology_event)
     return ontology_events
+
+
+def annotate_proteins_w_dram(faa_locs):
+    pass
+

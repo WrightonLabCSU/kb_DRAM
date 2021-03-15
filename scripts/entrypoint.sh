@@ -38,7 +38,7 @@ elif [ "${1}" = "init" ] ; then
                                          --vog_annotations vog_annotations_latest.tsv.gz \
                                          --viral_db_loc refseq_viral.20210303.mmsdb \
                                          --peptidase_db_loc peptidases.20210303.mmsdb \
-                                         --description_db_loc description_db.sqlite \
+                                         --description_db_loc /data/DRAM_databases/description_db.sqlite \
                                          --genome_summary_form_loc genome_summary_form.20210303.tsv \
                                          --module_step_form_loc module_step_form.20210303.tsv \
                                          --etc_module_database_loc etc_mdoule_database.20210303.tsv \
