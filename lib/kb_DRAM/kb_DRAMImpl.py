@@ -117,7 +117,7 @@ class kb_DRAM:
                       threads=4, verbose=False)
         output_files = get_annotation_files(output_dir)
         distill_output_dir = os.path.join(output_dir, 'distilled')
-        summarize_genomes(output_files['annotations']['path'], output_files['annotations']['trnas'],
+        summarize_genomes(output_files['annotations']['path'], output_files['trnas']['path'],
                           output_files['rrnas']['path'], output_dir=distill_output_dir, groupby_column='fasta')
         output_files = get_distill_files(distill_output_dir, output_files)
 
@@ -229,7 +229,6 @@ class kb_DRAM:
 
         # create Util objects
         wsClient = workspaceService(self.workspaceURL, token=ctx['token'])
-        genome_util = GenomeFileUtil(self.callback_url)
         datafile_util = DataFileUtil(self.callback_url)
         report_util = KBaseReport(self.callback_url)
 
@@ -241,7 +240,7 @@ class kb_DRAM:
         print_database_locations()
 
         # get genomes
-        genome_input_type = wsClient.get_object_info_new([{'ref': genome_input_ref}])[0][2]
+        genome_input_type = wsClient.get_object_info_new({'objects': [{'ref': genome_input_ref}]})[0][2]
         if 'GenomeSet' in genome_input_type:
             faa_objects = KBaseDataObjectToFileUtils.GenomeSetToFASTA({"genomeSet_ref": genome_input_ref,
                                                                        "file": 'DRAM',
@@ -269,7 +268,7 @@ class kb_DRAM:
         annotate_called_genes(faa_locs, output_dir, low_mem_mode=True, keep_tmp_dir=False, threads=4, verbose=False)
         output_files = get_annotation_files(output_dir)
         distill_output_dir = os.path.join(output_dir, 'distilled')
-        summarize_genomes(output_files['annotations']['path'], output_files['annotations']['trnas'],
+        summarize_genomes(output_files['annotations']['path'], output_files['trnas']['path'],
                           output_files['rrnas']['path'], output_dir=distill_output_dir, groupby_column='fasta')
         output_files = get_distill_files(distill_output_dir, output_files)
 
