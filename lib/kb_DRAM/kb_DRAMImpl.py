@@ -12,14 +12,13 @@ from mag_annotator.summarize_genomes import summarize_genomes
 from mag_annotator.utils import remove_suffix
 
 from installed_clients.WorkspaceClient import Workspace as workspaceService
-from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.AssemblyUtilClient import AssemblyUtil
-from installed_clients.DataFileUtilClient import DataFileUtil
 from installed_clients.GenomeFileUtilClient import GenomeFileUtil
 from installed_clients.annotation_ontology_apiServiceClient import annotation_ontology_api
 from installed_clients.KBaseDataObjectToFileUtilsClient import KBaseDataObjectToFileUtils
 
-from .utils.kb_DRAM_Util import get_annotation_files, get_distill_files, generate_genomes, add_ontology_terms
+from .utils.dram_util import get_annotation_files, get_distill_files, generate_genomes, add_ontology_terms
+from .utils.kbase_util import generate_product_report
 
 # TODO: Fix no pfam annotations bug
 #END_HEADER
@@ -92,8 +91,6 @@ class kb_DRAM:
         wsClient = workspaceService(self.workspaceURL, token=ctx['token'])
         assembly_util = AssemblyUtil(self.callback_url)
         genome_util = GenomeFileUtil(self.callback_url)
-        datafile_util = DataFileUtil(self.callback_url)
-        report_util = KBaseReport(self.callback_url)
 
         # set DRAM database locations
         print(dram_version)
@@ -173,27 +170,9 @@ class kb_DRAM:
                                "description": params['desc']})
 
         # generate report
-        html_file = os.path.join(output_dir, 'product.html')
-        # move html to main directory uploaded to shock so kbase can find it
-        os.rename(os.path.join(distill_output_dir, 'product.html'), html_file)
-        report_shock_id = datafile_util.file_to_shock({
-            'file_path': output_dir,
-            'pack': 'zip'
-        })['shock_id']
-        html_report = [{
-            'shock_id': report_shock_id,
-            'name': os.path.basename(html_file),
-            'label': os.path.basename(html_file),
-            'description': 'DRAM product.'
-        }]
-        report = report_util.create_extended_report({'message': 'Here are the results from your DRAM run.',
-                                                     'workspace_name': params['workspace_name'],
-                                                     'html_links': html_report,
-                                                     'direct_html_link_index': 0,
-                                                     'file_links': [value for key, value in output_files.items()
-                                                                    if value['path'] is not None],
-                                                     'objects_created': output_objects,
-                                                     })
+        product_html_loc = os.path.join(distill_output_dir, 'product.html')
+        report = generate_product_report(self.callback_url, params['workspace_name'], output_dir, product_html_loc,
+                                         output_files, output_objects)
         output = {
             'report_name': report['name'],
             'report_ref': report['ref'],
@@ -280,26 +259,9 @@ class kb_DRAM:
         [anno_api.add_annotation_ontology_events(i) for i in ontology_events]
 
         # generate report
-        html_file = os.path.join(output_dir, 'product.html')
-        # move html to main directory uploaded to shock so kbase can find it
-        os.rename(os.path.join(distill_output_dir, 'product.html'), html_file)
-        report_shock_id = datafile_util.file_to_shock({
-            'file_path': output_dir,
-            'pack': 'zip'
-        })['shock_id']
-        html_report = [{
-            'shock_id': report_shock_id,
-            'name': os.path.basename(html_file),
-            'label': os.path.basename(html_file),
-            'description': 'DRAM product.'
-        }]
-        report = report_util.create_extended_report({'message': 'Here are the results from your DRAM run.',
-                                                     'workspace_name': params['workspace_name'],
-                                                     'html_links': html_report,
-                                                     'direct_html_link_index': 0,
-                                                     'file_links': [value for key, value in output_files.items()
-                                                                    if value['path'] is not None],
-                                                     })
+        product_html_loc = os.path.join(distill_output_dir, 'product.html')
+        report = generate_product_report(self.callback_url, params['workspace_name'], output_dir, product_html_loc,
+                                         output_files)
         output = {
             'report_name': report['name'],
             'report_ref': report['ref'],
