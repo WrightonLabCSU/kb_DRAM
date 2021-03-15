@@ -37,9 +37,9 @@ class kb_DRAM:
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "0.0.1"
+    VERSION = "0.0.2"
     GIT_URL = "https://github.com/shafferm/kb_DRAM.git"
-    GIT_COMMIT_HASH = "841dbe5ba8fc4081377fd7ab7848d41262a33015"
+    GIT_COMMIT_HASH = "d5809a98f2a855e61e51621e7292b4d0e5f55a46"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -191,6 +191,24 @@ class kb_DRAM:
         # At some point might do deeper type checking...
         if not isinstance(output, dict):
             raise ValueError('Method run_kb_dram_annotate return value ' +
+                             'output is not type dict as required.')
+        # return the results
+        return [output]
+
+    def run_kb_dram_annotate_genome(self, ctx, params):
+        """
+        :param params: instance of mapping from String to unspecified object
+        :returns: instance of type "ReportResults" -> structure: parameter
+           "report_name" of String, parameter "report_ref" of String
+        """
+        # ctx is the context object
+        # return variables are: output
+        #BEGIN run_kb_dram_annotate_genome
+        #END run_kb_dram_annotate_genome
+
+        # At some point might do deeper type checking...
+        if not isinstance(output, dict):
+            raise ValueError('Method run_kb_dram_annotate_genome return value ' +
                              'output is not type dict as required.')
         # return the results
         return [output]

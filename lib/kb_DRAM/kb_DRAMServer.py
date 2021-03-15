@@ -342,6 +342,10 @@ class Application(object):
                              name='kb_DRAM.run_kb_dram_annotate',
                              types=[dict])
         self.method_authentication['kb_DRAM.run_kb_dram_annotate'] = 'required'  # noqa
+        self.rpc_service.add(impl_kb_DRAM.run_kb_dram_annotate_genome,
+                             name='kb_DRAM.run_kb_dram_annotate_genome',
+                             types=[dict])
+        self.method_authentication['kb_DRAM.run_kb_dram_annotate_genome'] = 'required'  # noqa
         self.rpc_service.add(impl_kb_DRAM.status,
                              name='kb_DRAM.status',
                              types=[dict])
