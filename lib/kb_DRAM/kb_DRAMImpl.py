@@ -205,7 +205,6 @@ class kb_DRAM:
             data_loaded = yaml.load(stream)
         version = str(data_loaded['module-version'])
         genome_input_ref = params['genome_input_ref']
-        output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
 
         # create Util objects
         wsClient = workspaceService(self.workspaceURL, token=ctx['token'])
@@ -219,11 +218,12 @@ class kb_DRAM:
         print_database_locations()
 
         # get genomes
+        genome_dir = os.path.join(self.shared_folder, 'genomes')
         genome_input_type = wsClient.get_object_info_new({'objects': [{'ref': genome_input_ref}]})[0][2]
         if 'GenomeSet' in genome_input_type:
             faa_objects = object_to_file_utils.GenomeSetToFASTA({"genomeSet_ref": genome_input_ref,
                                                                  "file": 'DRAM',
-                                                                 "dir": None,
+                                                                 "dir": genome_dir,
                                                                  "console": None,
                                                                  "invalid_msgs": None,
                                                                  "residue_type": 'P',
@@ -234,32 +234,33 @@ class kb_DRAM:
                                                                  "linewrap": None,
                                                                  "merge_fasta_files": False})
             # DRAM needs a fasta file ending so need to move to add ending
-            faa_locs = list()
             genome_ref_dict = {}
             for fasta_path in faa_objects['fasta_file_path_list']:
                 new_path = '%s.faa' % fasta_path
                 os.rename(fasta_path, new_path)
-                faa_locs.append(new_path)
                 file_name = os.path.splitext(os.path.basename(remove_suffix(new_path, '.gz')))[0]
                 genome_ref = file_name.split('.')[1].replace('-', '/')
                 genome_ref_dict[file_name] = genome_ref
         else:
             # this makes the names match if you are doing a genome or genomeSet
             faa_file = 'DRAM.%s.faa' % genome_input_ref.replace('/', '-')
-            faa_locs = object_to_file_utils.GenomeToFASTA({"genome_ref": genome_input_ref,
-                                                           "file": faa_file,
-                                                           "dir": None,
-                                                           "console": None,
-                                                           "invalid_msgs": None,
-                                                           "residue_type": 'P',
-                                                           "feature_type": None,
-                                                           "record_id_pattern": None,
-                                                           "record_desc_pattern": None,
-                                                           "case": None,
-                                                           "linewrap": None})
+            faa_object = object_to_file_utils.GenomeToFASTA({"genome_ref": genome_input_ref,
+                                                             "file": faa_file,
+                                                             "dir": genome_dir,
+                                                             "console": None,
+                                                             "invalid_msgs": None,
+                                                             "residue_type": 'P',
+                                                             "feature_type": None,
+                                                             "record_id_pattern": None,
+                                                             "record_desc_pattern": None,
+                                                             "case": None,
+                                                             "linewrap": None})[0]
             genome_ref_dict = {genome_input_ref: faa_file}
+        # in the end DRAM needs a path it can glob to get all the files
+        faa_locs = os.path.join(genome_dir, 'DRAM.*.faa')
 
         # annotate and distill with DRAM
+        output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
         annotate_called_genes(faa_locs, output_dir, low_mem_mode=True, keep_tmp_dir=False, threads=4, verbose=False)
         output_files = get_annotation_files(output_dir)
         distill_output_dir = os.path.join(output_dir, 'distilled')
