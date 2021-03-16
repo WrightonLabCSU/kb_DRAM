@@ -223,6 +223,7 @@ class kb_DRAM:
         if 'GenomeSet' in genome_input_type:
             faa_objects = object_to_file_utils.GenomeSetToFASTA({"genomeSet_ref": genome_input_ref,
                                                                  "file": 'DRAM',
+                                                                 "dir": None,
                                                                  "residue_type": 'P',
                                                                  "merge_fasta_files": False})
             # DRAM needs a fasta file ending so need to move to add ending
@@ -240,6 +241,7 @@ class kb_DRAM:
             faa_file = 'DRAM.%s.faa' % genome_input_ref.replace('/', '-')
             faa_locs = object_to_file_utils.GenomeToFASTA({"genome_ref": genome_input_ref,
                                                            "file": faa_file,
+                                                           "dir": None,
                                                            "residue_type": 'P'})
             genome_ref_dict = {genome_input_ref: faa_file}
 
