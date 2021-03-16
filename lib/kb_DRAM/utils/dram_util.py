@@ -4,6 +4,7 @@ import pandas as pd
 import datetime
 from skbio import read as read_sequence
 import hashlib
+import re
 
 
 def get_annotation_files(output_dir, output_files=None):
@@ -170,14 +171,23 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
         # TODO: also add EC and other ontologies
 
         kegg_ontology_terms = dict()
-        terms = list()
+        ko_terms = list()
+        ec_ontology_terms = dict()
+        ec_terms = list()
         for gene, row in genome_annotations.iterrows():
+            # get kos
             if not pd.isna(row['kegg_id']):
                 kegg_terms = row['kegg_id'].split(',')
-                terms += kegg_terms
+                ko_terms += kegg_terms
                 kegg_ontology_terms[gene] = [{'term': i} for i in kegg_terms]
+            # get ECs
+            # TODO: be able to capute EC's with - (i.e. EC 3.2.1.-)
+            for label, value in row.items():
+                if label.endswith('_id'):
+                    current_ec_terms = [i.replace(' ', ':') for i in re.findall(r"EC[ :]\d+.\d+.\d+.\d+", value)]
+                    ec_terms += current_ec_terms
+                    ec_ontology_terms[gene] = [{'term': i} for i in current_ec_terms]
 
-        timestamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         kegg_ontology = {
             'event_id': description,
             'description': description,
@@ -186,6 +196,17 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
             'method_version': version,
             "timestamp": timestamp,
             'ontology_terms': kegg_ontology_terms,
+            'gene_count': len(annotations),  # not used in the api
+            'term_count': len(set(terms))  # not used in the api
+        }
+        ec_ontology = {
+            'event_id': description,
+            'description': description,
+            'ontology_id': 'EC',
+            'method': 'DRAM',  # from above
+            'method_version': version,
+            "timestamp": timestamp,
+            'ontology_terms': ec_ontology_terms,
             'gene_count': len(annotations),  # not used in the api
             'term_count': len(set(terms))  # not used in the api
         }
@@ -198,7 +219,7 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
             "output_name": genome_object_name,
             "input_workspace": workspace,
             "workspace-url": workspace_url,
-            "events": [kegg_ontology],
+            "events": [kegg_ontology, ec_ontology],
             "timestamp": timestamp,
             "output_workspace": workspace,
             "save": 1

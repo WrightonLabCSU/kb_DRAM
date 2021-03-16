@@ -41,7 +41,7 @@ class kb_DRAM:
     ######################################### noqa
     VERSION = "0.0.2"
     GIT_URL = "https://github.com/shafferm/kb_DRAM.git"
-    GIT_COMMIT_HASH = "d5809a98f2a855e61e51621e7292b4d0e5f55a46"
+    GIT_COMMIT_HASH = "7b38d567c89bd37f5ca110120322a2d741e0df4e"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
