@@ -224,7 +224,14 @@ class kb_DRAM:
             faa_objects = object_to_file_utils.GenomeSetToFASTA({"genomeSet_ref": genome_input_ref,
                                                                  "file": 'DRAM',
                                                                  "dir": None,
+                                                                 "console": None,
+                                                                 "invalid_msgs": None,
                                                                  "residue_type": 'P',
+                                                                 "feature_type": None,
+                                                                 "record_id_pattern": None,
+                                                                 "record_desc_pattern": None,
+                                                                 "case": None,
+                                                                 "linewrap": None,
                                                                  "merge_fasta_files": False})
             # DRAM needs a fasta file ending so need to move to add ending
             faa_locs = list()
@@ -242,7 +249,14 @@ class kb_DRAM:
             faa_locs = object_to_file_utils.GenomeToFASTA({"genome_ref": genome_input_ref,
                                                            "file": faa_file,
                                                            "dir": None,
-                                                           "residue_type": 'P'})
+                                                           "console": None,
+                                                           "invalid_msgs": None,
+                                                           "residue_type": 'P',
+                                                           "feature_type": None,
+                                                           "record_id_pattern": None,
+                                                           "record_desc_pattern": None,
+                                                           "case": None,
+                                                           "linewrap": None})
             genome_ref_dict = {genome_input_ref: faa_file}
 
         # annotate and distill with DRAM
