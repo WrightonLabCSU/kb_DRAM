@@ -114,6 +114,7 @@ class kb_DRAM:
                       threads=4, verbose=False)
         output_files = get_annotation_files(output_dir)
         distill_output_dir = os.path.join(output_dir, 'distilled')
+        print(os.listdir(output_dir))
         summarize_genomes(output_files['annotations']['path'], output_files['trnas']['path'],
                           output_files['rrnas']['path'], output_dir=distill_output_dir, groupby_column='fasta')
         output_files = get_distill_files(distill_output_dir, output_files)
@@ -208,8 +209,7 @@ class kb_DRAM:
 
         # create Util objects
         wsClient = workspaceService(self.workspaceURL, token=ctx['token'])
-        datafile_util = DataFileUtil(self.callback_url)
-        report_util = KBaseReport(self.callback_url)
+        object_to_file_utils = KBaseDataObjectToFileUtils(self.callback_url)
 
         # set DRAM database locations
         print(dram_version)
@@ -221,10 +221,10 @@ class kb_DRAM:
         # get genomes
         genome_input_type = wsClient.get_object_info_new({'objects': [{'ref': genome_input_ref}]})[0][2]
         if 'GenomeSet' in genome_input_type:
-            faa_objects = KBaseDataObjectToFileUtils.GenomeSetToFASTA({"genomeSet_ref": genome_input_ref,
-                                                                       "file": 'DRAM',
-                                                                       "residue_type": 'P',
-                                                                       "merge_fasta_files": False})
+            faa_objects = object_to_file_utils.GenomeSetToFASTA({"genomeSet_ref": genome_input_ref,
+                                                                 "file": 'DRAM',
+                                                                 "residue_type": 'P',
+                                                                 "merge_fasta_files": False})
             # DRAM needs a fasta file ending so need to move to add ending
             faa_locs = list()
             genome_ref_dict = {}
@@ -238,9 +238,9 @@ class kb_DRAM:
         else:
             # this makes the names match if you are doing a genome or genomeSet
             faa_file = 'DRAM.%s.faa' % genome_input_ref.replace('/', '-')
-            faa_locs = KBaseDataObjectToFileUtils.GenomeToFASTA({"genome_ref": genome_input_ref,
-                                                                 "file": faa_file,
-                                                                 "residue_type": 'P'})
+            faa_locs = object_to_file_utils.GenomeToFASTA({"genome_ref": genome_input_ref,
+                                                           "file": faa_file,
+                                                           "residue_type": 'P'})
             genome_ref_dict = {genome_input_ref: faa_file}
 
         # annotate and distill with DRAM
