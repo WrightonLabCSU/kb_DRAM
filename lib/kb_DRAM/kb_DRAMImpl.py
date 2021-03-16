@@ -208,7 +208,7 @@ class kb_DRAM:
 
         # create Util objects
         wsClient = workspaceService(self.workspaceURL, token=ctx['token'])
-        object_to_file_utils = KBaseDataObjectToFileUtils(self.workspaceURL)
+        object_to_file_utils = KBaseDataObjectToFileUtils(self.callback_url, token=ctx['token'])
 
         # set DRAM database locations
         print(dram_version)
