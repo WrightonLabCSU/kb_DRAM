@@ -219,6 +219,7 @@ class kb_DRAM:
 
         # get genomes
         genome_dir = os.path.join(self.shared_folder, 'genomes')
+        os.mkdir(genome_dir)
         genome_input_type = wsClient.get_object_info_new({'objects': [{'ref': genome_input_ref}]})[0][2]
         if 'GenomeSet' in genome_input_type:
             faa_objects = object_to_file_utils.GenomeSetToFASTA({"genomeSet_ref": genome_input_ref,
