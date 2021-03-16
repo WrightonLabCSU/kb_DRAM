@@ -42,7 +42,7 @@ def get_annotation_files(output_dir, output_files=None):
                              'label': 'rrnas.tsv',
                              'description': 'Tab separated table of rRNAs as detected by barrnap'}
     trnas_loc = os.path.join(output_dir, 'trnas.tsv')
-    if os.path.exists(trnas_loc):
+    if not os.path.exists(trnas_loc):
         trnas_loc = None
     output_files['trnas'] = {'path': trnas_loc,
                              'name': 'trnas.tsv',
