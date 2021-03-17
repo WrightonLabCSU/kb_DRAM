@@ -194,7 +194,7 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
             'ontology_id': 'KO',
             'method': 'DRAM',  # from above
             'method_version': version,
-            "timestamp": timestamp,
+            "timestamp": datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
             'ontology_terms': kegg_ontology_terms,
             'gene_count': len(annotations),  # not used in the api
             'term_count': len(set(terms))  # not used in the api
@@ -205,7 +205,7 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
             'ontology_id': 'EC',
             'method': 'DRAM',  # from above
             'method_version': version,
-            "timestamp": timestamp,
+            "timestamp": datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
             'ontology_terms': ec_ontology_terms,
             'gene_count': len(annotations),  # not used in the api
             'term_count': len(set(terms))  # not used in the api
@@ -220,7 +220,7 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
             "input_workspace": workspace,
             "workspace-url": workspace_url,
             "events": [kegg_ontology, ec_ontology],
-            "timestamp": timestamp,
+            "timestamp": datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
             "output_workspace": workspace,
             "save": 1
         }
