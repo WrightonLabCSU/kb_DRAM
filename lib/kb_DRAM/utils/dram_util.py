@@ -174,7 +174,7 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
         ko_terms = list()
         ec_ontology_terms = dict()
         ec_terms = list()
-        for gene, row in genome_annotations.iterrows():
+        for gene, row in genome_annotations.iterrows(): # this is slow, could probably be an apply
             # get kos
             if not pd.isna(row['kegg_id']):
                 kegg_terms = row['kegg_id'].split(',')
@@ -183,7 +183,7 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
             # get ECs
             # TODO: be able to capute EC's with - (i.e. EC 3.2.1.-)
             for label, value in row.items():
-                if label.endswith('_id'):
+                if not pd.isna(value) and ('_hit' in label):
                     current_ec_terms = [i.replace(' ', ':') for i in re.findall(r"EC[ :]\d+.\d+.\d+.\d+", value)]
                     ec_terms += current_ec_terms
                     ec_ontology_terms[gene] = [{'term': i} for i in current_ec_terms]
