@@ -302,6 +302,79 @@ class kb_DRAM:
         # ctx is the context object
         # return variables are: output
         #BEGIN import_dram_annotations
+        output_files = dict()
+
+        annotations_tsv_loc = params['annotation_file']
+        output_files['annotations'] = {'path': annotations_tsv_loc,
+                                       'name': 'annotations.tsv',
+                                       'label': 'annotations.tsv',
+                                       'description': 'DRAM annotations in a tab separate table format'}
+        distill_output_dir = os.path.join(output_dir, 'distilled')
+        print(os.listdir(output_dir))
+        summarize_genomes(output_files['annotations']['path'], output_files['trnas']['path'],
+                          output_files['rrnas']['path'], output_dir=distill_output_dir, groupby_column='fasta')
+        # TODO: refactor so that get_distill_files doesn't take output_files buts returns dict and update output_files
+        output_files = get_distill_files(distill_output_dir, output_files)
+
+        # generate genome files
+        annotations = pd.read_csv(output_files['annotations']['path'], sep='\t', index_col=0)
+        genome_objects = generate_genomes(annotations, output_files['genes_fna']['path'],
+                                          output_files['genes_faa']['path'], assembly_ref_dict, assemblies,
+                                          params["workspace_name"], ctx.provenance())
+
+        genome_ref_dict = dict()
+        genome_set_elements = dict()
+        for genome_object in genome_objects:
+            info = genome_util.save_one_genome(genome_object)["info"]
+            genome_ref = '%s/%s/%s' % (info[6], info[0], info[4])
+            genome_object_name = genome_object["name"]
+            genome_set_elements[genome_object_name] = dict()
+            genome_set_elements[genome_object_name]['ref'] = genome_ref
+            output_objects.append({"ref": genome_ref,
+                                   "description": 'Annotated Genome'})
+            genome_ref_dict[genome_object_name] = genome_ref
+
+        # add ontology terms
+        anno_api = annotation_ontology_api(service_ver="beta")
+        ontology_events = add_ontology_terms(annotations, params['desc'], version, params['workspace_name'],
+                                             self.workspaceURL, genome_ref_dict)
+        [anno_api.add_annotation_ontology_events(i) for i in ontology_events]
+
+        # make genome set
+        if 'provenance' in ctx:
+            provenance = ctx['provenance']
+        else:
+            provenance = [{}]
+        # add additional info to provenance here, in this case the input data object reference
+        provenance[0]['input_ws_objects'] = []
+        for ass_ref in genome_ref_dict.values():
+            provenance[0]['input_ws_objects'].append(ass_ref)
+        provenance[0]['service'] = 'kb_SetUtilities'
+        provenance[0]['method'] = 'KButil_Batch_Create_GenomeSet'
+        output_genomeSet_obj = {'description': params['desc'],
+                                'elements': genome_set_elements
+                                }
+        output_genomeSet_name = params['output_name']
+        new_obj_info = wsClient.save_objects({'workspace': params['workspace_name'],
+                                              'objects': [{'type': 'KBaseSearch.GenomeSet',
+                                                           'data': output_genomeSet_obj,
+                                                           'name': output_genomeSet_name,
+                                                           'meta': {},
+                                                           'provenance': provenance
+                                                           }]
+                                              })[0]
+        genome_set_ref = '%s/%s/%s' % (new_obj_info[6], new_obj_info[0], new_obj_info[4])
+        output_objects.append({"ref": genome_set_ref,
+                               "description": params['desc']})
+
+        # generate report
+        product_html_loc = os.path.join(distill_output_dir, 'product.html')
+        report = generate_product_report(self.callback_url, params['workspace_name'], output_dir, product_html_loc,
+                                         output_files, output_objects)
+        output = {
+            'report_name': report['name'],
+            'report_ref': report['ref'],
+        }
         #END import_dram_annotations
 
         # At some point might do deeper type checking...

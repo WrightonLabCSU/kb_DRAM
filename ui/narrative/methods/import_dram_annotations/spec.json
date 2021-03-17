@@ -69,7 +69,7 @@
                     "narrative_system_variable": "workspace_id",
                     "target_property": "workspace_id"
                 },{
-                    "input_parameter": "annotation_file",
+                    "input_parameter": "assembly_input_ref",
                     "target_property": "assembly_input_ref",
                     "target_type_transform": "resolved-ref"
                 },{
