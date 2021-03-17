@@ -1,0 +1,68 @@
+#
+# define display information
+#
+name: Import DRAM annotations to make genomes
+
+tooltip: |
+    Import DRAM annotations. Annotations will then be distilled to create an interactive functional summary per assembly. Genome objects will be generated.
+
+screenshots: []
+
+icon: icon.png
+
+#
+# define a set of similar apps that might be useful to the user
+#
+suggestions:
+    apps:
+        related:
+            []
+        next:
+            []
+    methods:
+        related:
+            []
+        next:
+            [annotate_contigset]
+
+#
+# Configure the display and description of parameters
+#
+parameters :
+    assembly_input_ref :
+        ui-name : |
+            Assembly/assembly set annotated with DRAM outside KBase
+        short-hint : |
+            The assembly/assemby set annotated with DRAM.
+    annotation_file:
+        ui-name: |
+            DRAM annotations.tsv file path
+        short-hint: |
+            Select the TSV file containing your annotation.
+    desc:
+        ui-name: |
+            Description
+        short-hint: |
+            Describe the contents of the output GenomeSet.
+        placeholder: |
+            Enter Description
+    output_name:
+        ui-name: |
+            Output GenomeSet Name
+        short-hint: |
+            Name for the output GenomeSet collection.
+
+description : |
+    <p>DRAM will annotate assemblies and provide summarization of the metabolisms each assembly is capable of. You may have ran DRAM on your own system and want to upload these annotations to KBase to build models.</p>
+
+    <p>DRAM for MAGs works by annotating all genomes given with all databases used by DRAM. The user is given a tab delimited annotations file with all annotations from all databases for all genes in all genomes. Additionally the user is given a folder with genbank files for each genome, a gff file with all annotations across genomes as well as annotated nucleotide and amino acid fasta files of all genes. The results of annotation are distilled. This generates three files: 1. The genome statistics table which includes all statistics required by MIMAG, 2. the metabolism summary which gives gene counts of functional genes across a wide variety of metabolisms and 3. the product which is a heatmap showing coverage of modules, the coverage of electron transport chain components and the presence of selected metabolic functions.</p>
+
+publications :
+    -
+        display-text: |
+            DRAM source code
+        link: https://github.com/shafferm/DRAM/
+    -
+        display-text: |
+            DRAM documentation
+        link: https://github.com/shafferm/DRAM/wiki
