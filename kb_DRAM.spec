@@ -13,4 +13,5 @@ module kb_DRAM {
     */
     funcdef run_kb_dram_annotate(mapping<string,UnspecifiedObject> params) returns (ReportResults output) authentication required;
     funcdef run_kb_dram_annotate_genome(mapping<string,UnspecifiedObject> params) returns (ReportResults output) authentication required;
+    funcdef import_dram_annotations(mapping<string,UnspecifiedObject> params) returns (ReportResults output) authentication required;
 };

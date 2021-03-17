@@ -41,7 +41,7 @@ class kb_DRAM:
     ######################################### noqa
     VERSION = "0.0.2"
     GIT_URL = "https://github.com/shafferm/kb_DRAM.git"
-    GIT_COMMIT_HASH = "7b38d567c89bd37f5ca110120322a2d741e0df4e"
+    GIT_COMMIT_HASH = "db94a85ca8aac19cf5c33451a5d147fb4f07d969"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -289,6 +289,24 @@ class kb_DRAM:
         # At some point might do deeper type checking...
         if not isinstance(output, dict):
             raise ValueError('Method run_kb_dram_annotate_genome return value ' +
+                             'output is not type dict as required.')
+        # return the results
+        return [output]
+
+    def import_dram_annotations(self, ctx, params):
+        """
+        :param params: instance of mapping from String to unspecified object
+        :returns: instance of type "ReportResults" -> structure: parameter
+           "report_name" of String, parameter "report_ref" of String
+        """
+        # ctx is the context object
+        # return variables are: output
+        #BEGIN import_dram_annotations
+        #END import_dram_annotations
+
+        # At some point might do deeper type checking...
+        if not isinstance(output, dict):
+            raise ValueError('Method import_dram_annotations return value ' +
                              'output is not type dict as required.')
         # return the results
         return [output]
