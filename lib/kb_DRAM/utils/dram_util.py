@@ -197,7 +197,7 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
             "timestamp": datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
             'ontology_terms': kegg_ontology_terms,
             'gene_count': len(annotations),  # not used in the api
-            'term_count': len(set(terms))  # not used in the api
+            'term_count': len(set(ko_terms))  # not used in the api
         }
         ec_ontology = {
             'event_id': description,
@@ -208,7 +208,7 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
             "timestamp": datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
             'ontology_terms': ec_ontology_terms,
             'gene_count': len(annotations),  # not used in the api
-            'term_count': len(set(terms))  # not used in the api
+            'term_count': len(set(ec_terms))  # not used in the api
         }
 
         genome_object_name = '%s_genome' % genome_name
