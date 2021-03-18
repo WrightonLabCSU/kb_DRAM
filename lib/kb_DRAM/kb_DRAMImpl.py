@@ -259,7 +259,7 @@ class kb_DRAM:
                                                              "record_id_pattern": None,
                                                              "record_desc_pattern": None,
                                                              "case": None,
-                                                             "linewrap": None})[0]
+                                                             "linewrap": None})
             genome_ref_dict = {genome_input_ref: faa_file}
         # in the end DRAM needs a path it can glob to get all the files
         # TODO: make annotated called genes take list on DRAM side
@@ -322,7 +322,7 @@ class kb_DRAM:
             'shock_id': affi_contigs_shock_id,
             'file_path': affi_contigs_path,
             'unpack': 'unpack'
-        })[0]['file_path']
+        })['file_path']
 
         # annotate and distill
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
