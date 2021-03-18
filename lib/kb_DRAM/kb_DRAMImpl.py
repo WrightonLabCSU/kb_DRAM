@@ -317,8 +317,10 @@ class kb_DRAM:
         # get files
         assembly = assembly_util.get_fastas({'ref_lst': [params['assembly_input_ref']]})
         fasta_loc = assembly[params['assembly_input_ref']]['paths'][0]
+        affi_contigs_path = os.path.join(self.shared_folder, 'VIRSorter_affi-contigs.tab')
         affi_contigs = datafile_util.shock_to_file({
             'shock_id': affi_contigs_shock_id,
+            'file_path': affi_contigs_path,
             'unpack': 'unpack'
         })[0]['file_path']
 
