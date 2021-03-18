@@ -50,6 +50,7 @@ def get_annotation_files(output_dir, output_files=None):
                              'label': 'trnas.tsv',
                              'description': 'Tab separated table of tRNAs as detected by tRNAscan-SE'}
     gbks_loc = os.path.join(output_dir, 'genbank')
+    gbk_loc = os.path.join(output_dir, 'scaffolds.gbk')
     if os.path.exists(gbks_loc):
         genome_gbks_loc = os.path.join(output_dir, 'genbank.tar.gz')
         tar = tarfile.open(genome_gbks_loc, "w:gz")
@@ -59,7 +60,14 @@ def get_annotation_files(output_dir, output_files=None):
         output_files['gbks'] = {'path': genome_gbks_loc,
                                 'name': 'genbank.tar.gz',
                                 'label': 'genbank.tar.gz',
-                                'description': 'Compressed folder of output genbank files?'}
+                                'description': 'Compressed folder of output genbank files'}
+    elif os.path.exists(gbk_loc):
+        output_files['gbks'] = {'path': gbk_loc,
+                                'name': 'scaffolds.gbk',
+                                'label': 'scaffolds.gbk',
+                                'description': 'Genbank file with annotations for all '}
+    else:
+        pass
     return output_files
 
 
@@ -229,6 +237,17 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
     return ontology_events
 
 
-def annotate_proteins_w_dram(faa_locs):
-    pass
-
+def get_viral_distill_files(distill_output_dir, output_files=None):
+    if output_files is None:
+        output_files = dict()
+    amg_summary_loc = os.path.join(distill_output_dir, 'amg_summary.tsv')
+    output_files['amg_summary'] = {'path': amg_summary_loc,
+                                   'name': 'amg_summary.tsv',
+                                   'label': 'amg_summary.tsv',
+                                   'description': 'DRAM-v AMG summary table'}
+    vmag_stats_loc = os.path.join(distill_output_dir, 'vMAG_stats.tsv')
+    output_files['genome_stats'] = {'path': vmag_stats_loc,
+                                    'name': 'vMAG_stats.tsv',
+                                    'label': 'vMAG_stats.tsv',
+                                    'description': 'DRAM-v vMAG statistics table'}
+    return output_files

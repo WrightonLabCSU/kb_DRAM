@@ -9,6 +9,8 @@ from mag_annotator import __version__ as dram_version
 from mag_annotator.database_processing import import_config, set_database_paths, print_database_locations
 from mag_annotator.annotate_bins import annotate_bins, annotate_called_genes
 from mag_annotator.summarize_genomes import summarize_genomes
+from mag_annotator.annotate_vgfs import annotate_vgfs
+from mag_annotator.summarize_vgfs import summarize_vgfs
 from mag_annotator.utils import remove_suffix
 
 from installed_clients.WorkspaceClient import Workspace as workspaceService
@@ -16,8 +18,10 @@ from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.GenomeFileUtilClient import GenomeFileUtil
 from installed_clients.annotation_ontology_apiServiceClient import annotation_ontology_api
 from installed_clients.KBaseDataObjectToFileUtilsClient import KBaseDataObjectToFileUtils
+from installed_clients.DataFileUtilClient import DataFileUtil
 
-from .utils.dram_util import get_annotation_files, get_distill_files, generate_genomes, add_ontology_terms
+from .utils.dram_util import get_annotation_files, get_distill_files, generate_genomes, add_ontology_terms,\
+    get_viral_distill_files
 from .utils.kbase_util import generate_product_report
 
 # TODO: Fix no pfam annotations bug
@@ -41,7 +45,7 @@ class kb_DRAM:
     ######################################### noqa
     VERSION = "0.0.2"
     GIT_URL = "https://github.com/shafferm/kb_DRAM.git"
-    GIT_COMMIT_HASH = "7b38d567c89bd37f5ca110120322a2d741e0df4e"
+    GIT_COMMIT_HASH = "6c91eb1cdbd74eec6efd105477c89b76f34cabd9"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -258,6 +262,7 @@ class kb_DRAM:
                                                              "linewrap": None})[0]
             genome_ref_dict = {genome_input_ref: faa_file}
         # in the end DRAM needs a path it can glob to get all the files
+        # TODO: make annotated called genes take list on DRAM side
         faa_locs = os.path.join(genome_dir, 'DRAM.*.faa')
 
         # annotate and distill with DRAM
@@ -289,6 +294,56 @@ class kb_DRAM:
         # At some point might do deeper type checking...
         if not isinstance(output, dict):
             raise ValueError('Method run_kb_dram_annotate_genome return value ' +
+                             'output is not type dict as required.')
+        # return the results
+        return [output]
+
+    def run_kb_dramv_annotate(self, ctx, params):
+        """
+        :param params: instance of mapping from String to unspecified object
+        :returns: instance of type "ReportResults" -> structure: parameter
+           "report_name" of String, parameter "report_ref" of String
+        """
+        # ctx is the context object
+        # return variables are: output
+        #BEGIN run_kb_dramv_annotate
+        # setup
+        affi_contigs_shock_id = params['affi_contigs_shock_id']
+        min_contig_size = params['min_contig_size']
+
+        assembly_util = AssemblyUtil(self.callback_url)
+        datafile_util = DataFileUtil(self.callback_url)
+
+        # get files
+        assembly = assembly_util.get_fastas({'ref_lst': [params['assembly_input_ref']]})
+        fasta_loc = assembly[params['assembly_input_ref']]['paths'][0]
+        affi_contigs = datafile_util.shock_to_file({
+            'shock_id': affi_contigs_shock_id,
+            'unpack': 'unpack'
+        })[0]['file_path']
+
+        # annotate and distill
+        output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
+        annotate_vgfs(fasta_loc, affi_contigs, output_dir, min_contig_size)
+        output_files = get_annotation_files(output_dir)
+        distill_output_dir = os.path.join(output_dir, 'distilled')
+        summarize_vgfs(output_files['annotations']['path'], distill_output_dir, groupby_column='scaffold')
+        output_files = get_viral_distill_files(distill_output_dir, output_files)
+
+
+        # generate report
+        product_html_loc = os.path.join(distill_output_dir, 'product.html')
+        report = generate_product_report(self.callback_url, params['workspace_name'], output_dir,
+                                               product_html_loc, output_files)
+        output = {
+            'report_name': report['name'],
+            'report_ref': report['ref'],
+        }
+        #END run_kb_dramv_annotate
+
+        # At some point might do deeper type checking...
+        if not isinstance(output, dict):
+            raise ValueError('Method run_kb_dramv_annotate return value ' +
                              'output is not type dict as required.')
         # return the results
         return [output]
