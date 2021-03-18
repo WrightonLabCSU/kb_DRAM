@@ -1,0 +1,68 @@
+#
+# define display information
+#
+name: Annotate and Distill Viral Assemblies with DRAM-v
+
+tooltip: |
+    Annotate your viral assembly with DRAM. Annotations will then be distilled to create an interactive functional summary per virus.
+
+screenshots: []
+
+icon: icon.png
+
+#
+# define a set of similar apps that might be useful to the user
+#
+suggestions:
+    apps:
+        related:
+            []
+        next:
+            []
+    methods:
+        related:
+            []
+        next:
+            [annotate_contigset]
+
+#
+# Configure the display and description of parameters
+#
+parameters :
+    assembly_input_ref :
+        ui-name : |
+            Assembly/assembly set to be annotated
+        short-hint : |
+            The contig collection(s) you want to annotate with DRAM
+    affi_contigs_shock_id:
+        ui-name: |
+            Shock id of VIRSorter_affi-contigs.tab from VirSorter
+        short-hint: |
+            The shock id of the VIRSorter_affi-contigs.tab. This can be found in the report summary from the VirSorter app.
+        placeholder: |
+            VIRSorter_affi-contigs.tab
+    min_contig_size :
+        ui-name: |
+            Minimum contig length
+        short-hint: |
+            Contigs shorter than this length will not be annotated (default: 2500)
+    output_name:
+        ui-name: |
+            Output GenomeSet Name
+        short-hint: |
+            Name for the Output GenomeSet Collection
+
+description : |
+    <p>DRAM will annotate assemblies and provide summarization of the metabolisms each assembly is capable of. DRAM is most useful for annotating assebmly sets where the DRAM product can be used to compare the metabolic profiles of each assembly.</p>
+
+    <p>DRAM for MAGs works by annotating all genomes given with all databases used by DRAM. The user is given a tab delimited annotations file with all annotations from all databases for all genes in all genomes. Additionally the user is given a folder with genbank files for each genome, a gff file with all annotations across genomes as well as annotated nucleotide and amino acid fasta files of all genes. The results of annotation are distilled. This generates three files: 1. The genome statistics table which includes all statistics required by MIMAG, 2. the metabolism summary which gives gene counts of functional genes across a wide variety of metabolisms and 3. the product which is a heatmap showing coverage of modules, the coverage of electron transport chain components and the presence of selected metabolic functions.</p>
+
+publications :
+    -
+        display-text: |
+            DRAM source code
+        link: https://github.com/shafferm/DRAM/
+    -
+        display-text: |
+            DRAM documentation
+        link: https://github.com/shafferm/DRAM/wiki

@@ -1,0 +1,84 @@
+{
+    "ver": "0.0.2",
+    "authors": [
+        "michael_shaffer"
+    ],
+    "contact": "",
+    "categories": ["active", "annotation"],
+    "widgets": {
+        "input": null,
+        "output": "no-display"
+    },
+    "parameters": [ 
+        {
+            "id": "assembly_input_ref",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": [ "KBaseGenomeAnnotations.Assembly" ]
+            }
+        },
+        {
+            "id": "min_contig_size",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "2500" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "int",
+                "min_integer" : 0
+            }
+        },
+        {
+            "id": "affi_contigs_shock_id",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+		        "is_output_name": false
+            }
+        }
+    ],
+    "behavior": {
+        "service-mapping": {
+            "url": "",
+            "name": "kb_DRAM",
+            "method": "run_kb_dramv_annotate",
+            "input_mapping": [
+                {
+                    "narrative_system_variable": "workspace",
+                    "target_property": "workspace_name"
+                },{
+                    "narrative_system_variable": "workspace_id",
+                    "target_property": "workspace_id"
+                },{
+                    "input_parameter": "assembly_input_ref",
+                    "target_property": "assembly_input_ref",
+                    "target_type_transform": "resolved-ref"
+                },{
+                    "input_parameter": "min_contig_size",
+                    "target_property": "min_contig_size"
+                },{
+                    "input_parameter": "affi_contigs_shock_id",
+                    "target_property": "affi_contigs_shock_id"
+                }
+            ],
+            "output_mapping": [
+                {
+                    "service_method_output_path": [0,"report_name"],
+                    "target_property": "report_name"
+                },{
+                    "service_method_output_path": [0,"report_ref"],
+                    "target_property": "report_ref"
+                }
+            ]
+        }
+    },
+    "job_id_output_field": "docker"
+}
