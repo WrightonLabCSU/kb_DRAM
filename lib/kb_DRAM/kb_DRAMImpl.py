@@ -324,6 +324,13 @@ class kb_DRAM:
             'unpack': 'unpack'
         })['file_path']
 
+        # set DRAM database locations
+        print(dram_version)
+        import_config('/data/DRAM_databases/CONFIG')
+        # This is a hack to get around a bug in my database setup
+        set_database_paths(description_db_loc='/data/DRAM_databases/description_db.sqlite')
+        print_database_locations()
+
         # annotate and distill
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
         annotate_vgfs(fasta_loc, affi_contigs, output_dir, min_contig_size)
