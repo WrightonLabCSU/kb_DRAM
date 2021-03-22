@@ -148,6 +148,7 @@ class kb_DRAM:
         [anno_api.add_annotation_ontology_events(i) for i in ontology_events]
 
         # make genome set
+        # TODO: only make genome set if there is more than one genome
         if 'provenance' in ctx:
             provenance = ctx['provenance']
         else:
@@ -246,6 +247,7 @@ class kb_DRAM:
                 file_name = os.path.splitext(os.path.basename(remove_suffix(new_path, '.gz')))[0]
                 genome_ref = file_name.split('.')[1].replace('-', '/')
                 genome_ref_dict[file_name] = genome_ref
+                faa_locs = new_path
         else:
             # this makes the names match if you are doing a genome or genomeSet
             faa_file = 'DRAM.%s.faa' % genome_input_ref.replace('/', '-')
@@ -261,9 +263,9 @@ class kb_DRAM:
                                                              "case": None,
                                                              "linewrap": None})
             genome_ref_dict = {genome_input_ref: faa_file}
+            faa_locs = os.path.join(genome_dir, 'DRAM.*.faa')
         # in the end DRAM needs a path it can glob to get all the files
         # TODO: make annotated called genes take list on DRAM side
-        faa_locs = os.path.join(genome_dir, 'DRAM.*.faa')
 
         # annotate and distill with DRAM
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
