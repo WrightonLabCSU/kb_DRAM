@@ -9,7 +9,7 @@ from mag_annotator import __version__ as dram_version
 from mag_annotator.database_processing import import_config, set_database_paths, print_database_locations
 from mag_annotator.annotate_bins import annotate_bins, annotate_called_genes
 from mag_annotator.summarize_genomes import summarize_genomes
-from mag_annotator.annotate_vgfs import annotate_vgfs
+from mag_annotator.annotate_vgfs import annotate_vgfs, remove_bad_chars
 from mag_annotator.summarize_vgfs import summarize_vgfs
 from mag_annotator.utils import remove_suffix
 
@@ -319,7 +319,7 @@ class kb_DRAM:
 
         # get files
         assembly = assembly_util.get_fastas({'ref_lst': [params['assembly_input_ref']]})
-        fasta_loc = assembly[params['assembly_input_ref']]['paths'][0]
+        fasta = assembly[params['assembly_input_ref']]['paths'][0]
         affi_contigs_path = os.path.join(self.shared_folder, 'VIRSorter_affi-contigs.tab')
         affi_contigs = datafile_util.shock_to_file({
             'shock_id': affi_contigs_shock_id,
@@ -334,9 +334,15 @@ class kb_DRAM:
         set_database_paths(description_db_loc='/data/DRAM_databases/description_db.sqlite')
         print_database_locations()
 
+        # clean affi contigs file
+        cleaned_fasta = os.path.join(self.shared_folder, '%s.cleaned.fasta' % os.path.basename(fasta))
+        remove_bad_chars(input_fasta=fasta, output=cleaned_fasta)
+        cleaned_affi_contigs =os.path.join(self.shared_folder, 'VIRSorter_affi-contigs.cleaned.tab')
+        remove_bad_chars(affi_contigs, cleaned_affi_contigs)
+
         # annotate and distill
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
-        annotate_vgfs(fasta_loc, affi_contigs, output_dir, min_contig_size)
+        annotate_vgfs(cleaned_fasta, affi_contigs, output_dir, min_contig_size)
         output_files = get_annotation_files(output_dir)
         distill_output_dir = os.path.join(output_dir, 'distilled')
         summarize_vgfs(output_files['annotations']['path'], distill_output_dir, groupby_column='scaffold')
