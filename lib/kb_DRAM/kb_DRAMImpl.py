@@ -337,8 +337,8 @@ class kb_DRAM:
         # clean affi contigs file
         cleaned_fasta = os.path.join(self.shared_folder, '%s.cleaned.fasta' % os.path.basename(fasta))
         remove_bad_chars(input_fasta=fasta, output=cleaned_fasta)
-        cleaned_affi_contigs =os.path.join(self.shared_folder, 'VIRSorter_affi-contigs.cleaned.tab')
-        remove_bad_chars(affi_contigs, cleaned_affi_contigs)
+        cleaned_affi_contigs = os.path.join(self.shared_folder, 'VIRSorter_affi-contigs.cleaned.tab')
+        remove_bad_chars(input_virsorter_affi_contigs=affi_contigs, output=cleaned_affi_contigs)
 
         # annotate and distill
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
