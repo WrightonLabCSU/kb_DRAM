@@ -160,8 +160,7 @@ class kb_DRAM:
         provenance[0]['service'] = 'kb_SetUtilities'
         provenance[0]['method'] = 'KButil_Batch_Create_GenomeSet'
         output_genomeSet_obj = {'description': params['desc'],
-                                'elements': genome_set_elements
-                                }
+                                'elements': genome_set_elements}
         output_genomeSet_name = params['output_name']
         new_obj_info = wsClient.save_objects({'workspace': params['workspace_name'],
                                               'objects': [{'type': 'KBaseSearch.GenomeSet',
@@ -227,6 +226,7 @@ class kb_DRAM:
         os.mkdir(genome_dir)
         genome_input_type = wsClient.get_object_info_new({'objects': [{'ref': genome_input_ref}]})[0][2]
         faa_locs = list()
+        genome_ref_dict = {}
         if 'GenomeSet' in genome_input_type:
             faa_objects = object_to_file_utils.GenomeSetToFASTA({"genomeSet_ref": genome_input_ref,
                                                                  "file": 'DRAM',
@@ -241,7 +241,6 @@ class kb_DRAM:
                                                                  "linewrap": None,
                                                                  "merge_fasta_files": False})
             # DRAM needs a fasta file ending so need to move to add ending
-            genome_ref_dict = {}
             for fasta_path in faa_objects['fasta_file_path_list']:
                 new_path = '%s.faa' % fasta_path
                 os.rename(fasta_path, new_path)
@@ -263,7 +262,8 @@ class kb_DRAM:
                                                              "record_desc_pattern": None,
                                                              "case": None,
                                                              "linewrap": None})
-            genome_ref_dict = {genome_input_ref: faa_file}
+            file_name = os.path.splitext(os.path.basename(remove_suffix(faa_object['fasta_file_path'], '.gz')))[0]
+            genome_ref_dict[file_name] = genome_input_ref
             faa_locs.append(faa_object['fasta_file_path'])
 
         # annotate and distill with DRAM
