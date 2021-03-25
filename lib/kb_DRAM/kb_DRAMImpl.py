@@ -243,7 +243,7 @@ class kb_DRAM:
             # DRAM needs a fasta file ending so need to move to add ending
             genome_ref_dict = {}
             for fasta_path in faa_objects['fasta_file_path_list']:
-                new_path = '%s.faa' % os.path.abspath(fasta_path)
+                new_path = '%s.faa' % fasta_path
                 os.rename(fasta_path, new_path)
                 faa_locs.append(new_path)
                 file_name = os.path.splitext(os.path.basename(remove_suffix(new_path, '.gz')))[0]
@@ -264,7 +264,7 @@ class kb_DRAM:
                                                              "case": None,
                                                              "linewrap": None})
             genome_ref_dict = {genome_input_ref: faa_file}
-            faa_locs.append(faa_file)
+            faa_locs.append(faa_object['fasta_file_path'])
 
         # annotate and distill with DRAM
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
