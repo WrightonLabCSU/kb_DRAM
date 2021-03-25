@@ -226,6 +226,7 @@ class kb_DRAM:
         genome_dir = os.path.join(self.shared_folder, 'genomes')
         os.mkdir(genome_dir)
         genome_input_type = wsClient.get_object_info_new({'objects': [{'ref': genome_input_ref}]})[0][2]
+        faa_locs = list()
         if 'GenomeSet' in genome_input_type:
             faa_objects = object_to_file_utils.GenomeSetToFASTA({"genomeSet_ref": genome_input_ref,
                                                                  "file": 'DRAM',
@@ -244,10 +245,10 @@ class kb_DRAM:
             for fasta_path in faa_objects['fasta_file_path_list']:
                 new_path = '%s.faa' % fasta_path
                 os.rename(fasta_path, new_path)
+                faa_locs.append(new_path)
                 file_name = os.path.splitext(os.path.basename(remove_suffix(new_path, '.gz')))[0]
                 genome_ref = file_name.split('.')[1].replace('-', '/')
                 genome_ref_dict[file_name] = genome_ref
-            faa_locs = os.path.join(genome_dir, 'DRAM.*.faa')
         else:
             # this makes the names match if you are doing a genome or genomeSet
             faa_file = 'DRAM.%s.faa' % genome_input_ref.replace('/', '-')
@@ -263,10 +264,7 @@ class kb_DRAM:
                                                              "case": None,
                                                              "linewrap": None})
             genome_ref_dict = {genome_input_ref: faa_file}
-            faa_locs = faa_file
-        # faa_locs = os.path.join(genome_dir, 'DRAM.*.faa') # TODO: make this the normal thing again
-        # in the end DRAM needs a path it can glob to get all the files
-        # TODO: make annotated called genes take list on DRAM side
+            faa_locs.append(faa_file)
 
         # annotate and distill with DRAM
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
