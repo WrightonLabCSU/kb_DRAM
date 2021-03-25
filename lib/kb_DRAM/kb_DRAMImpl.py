@@ -342,7 +342,7 @@ class kb_DRAM:
 
         # annotate and distill
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
-        annotate_vgfs(cleaned_fasta, affi_contigs, output_dir, min_contig_size)
+        annotate_vgfs(cleaned_fasta, cleaned_affi_contigs, output_dir, min_contig_size)
         output_files = get_annotation_files(output_dir)
         distill_output_dir = os.path.join(output_dir, 'distilled')
         summarize_vgfs(output_files['annotations']['path'], distill_output_dir, groupby_column='scaffold')
