@@ -243,7 +243,7 @@ class kb_DRAM:
             # DRAM needs a fasta file ending so need to move to add ending
             genome_ref_dict = {}
             for fasta_path in faa_objects['fasta_file_path_list']:
-                new_path = '%s.faa' % fasta_path
+                new_path = '%s.faa' % os.path.abspath(fasta_path)
                 os.rename(fasta_path, new_path)
                 faa_locs.append(new_path)
                 file_name = os.path.splitext(os.path.basename(remove_suffix(new_path, '.gz')))[0]
@@ -340,7 +340,7 @@ class kb_DRAM:
 
         # annotate and distill
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
-        annotate_vgfs(cleaned_fasta, cleaned_affi_contigs, output_dir, min_contig_size)
+        annotate_vgfs(cleaned_fasta, cleaned_affi_contigs, output_dir, min_contig_size, verbose=False)
         output_files = get_annotation_files(output_dir)
         distill_output_dir = os.path.join(output_dir, 'distilled')
         summarize_vgfs(output_files['annotations']['path'], distill_output_dir, groupby_column='scaffold')
@@ -350,7 +350,7 @@ class kb_DRAM:
         # generate report
         product_html_loc = os.path.join(distill_output_dir, 'product.html')
         report = generate_product_report(self.callback_url, params['workspace_name'], output_dir,
-                                               product_html_loc, output_files)
+                                         product_html_loc, output_files)
         output = {
             'report_name': report['name'],
             'report_ref': report['ref'],

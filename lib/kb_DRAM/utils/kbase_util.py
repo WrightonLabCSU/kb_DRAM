@@ -6,6 +6,10 @@ from installed_clients.DataFileUtilClient import DataFileUtil
 
 def generate_product_report(callback_url, workspace_name, output_dir, product_html_loc, output_files,
                             output_objects=None):
+    # check params
+    if output_objects is None:
+        output_objects = []
+
     # setup utils
     datafile_util = DataFileUtil(callback_url)
     report_util = KBaseReport(callback_url)
