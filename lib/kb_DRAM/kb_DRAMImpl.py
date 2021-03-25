@@ -278,7 +278,7 @@ class kb_DRAM:
         # add ontology terms
         annotations = pd.read_csv(output_files['annotations']['path'], sep='\t', index_col=0)
         anno_api = annotation_ontology_api(service_ver="beta")
-        ontology_events = add_ontology_terms(annotations, params['desc'], version, params['workspace_name'],
+        ontology_events = add_ontology_terms(annotations, "DRAM genome annotated", version, params['workspace_name'],
                                              self.workspaceURL, genome_ref_dict)
         [anno_api.add_annotation_ontology_events(i) for i in ontology_events]
 
