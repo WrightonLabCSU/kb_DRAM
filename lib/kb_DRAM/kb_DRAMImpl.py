@@ -315,9 +315,15 @@ class kb_DRAM:
         assembly_util = AssemblyUtil(self.callback_url)
         datafile_util = DataFileUtil(self.callback_url)
 
-        # get files
+        # get contigs
         assembly = assembly_util.get_fastas({'ref_lst': [params['assembly_input_ref']]})
-        fasta = assembly[params['assembly_input_ref']]['paths'][0]
+        fasta = os.path.join(self.shared_folder, 'merged_contigs.fasta')
+        with open(fasta, 'w') as f:
+            for fasta_path in assembly[params['assembly_input_ref']]['paths']:
+                for line in open(fasta_path):
+                    f.write(line)
+
+        # get affi contigs
         affi_contigs_path = os.path.join(self.shared_folder, 'VIRSorter_affi-contigs.tab')
         affi_contigs = datafile_util.shock_to_file({
             'shock_id': affi_contigs_shock_id,
@@ -345,7 +351,6 @@ class kb_DRAM:
         distill_output_dir = os.path.join(output_dir, 'distilled')
         summarize_vgfs(output_files['annotations']['path'], distill_output_dir, groupby_column='scaffold')
         output_files = get_viral_distill_files(distill_output_dir, output_files)
-
 
         # generate report
         product_html_loc = os.path.join(distill_output_dir, 'product.html')
