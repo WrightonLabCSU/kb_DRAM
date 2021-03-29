@@ -131,15 +131,13 @@ class kb_DRAM:
 
         genome_ref_dict = dict()
         genome_set_elements = dict()
-        for genome_object in genome_objects:
+        for genome_name, genome_object in genome_objects.items():
             info = genome_util.save_one_genome(genome_object)["info"]
             genome_ref = '%s/%s/%s' % (info[6], info[0], info[4])
-            genome_object_name = genome_object["name"]
-            genome_set_elements[genome_object_name] = dict()
-            genome_set_elements[genome_object_name]['ref'] = genome_ref
+            genome_set_elements[genome_object["name"]] = {'ref': genome_ref}
             output_objects.append({"ref": genome_ref,
                                    "description": 'Annotated Genome'})
-            genome_ref_dict[genome_object_name] = genome_ref
+            genome_ref_dict[genome_name] = genome_ref
 
         # add ontology terms
         anno_api = annotation_ontology_api(service_ver="beta")

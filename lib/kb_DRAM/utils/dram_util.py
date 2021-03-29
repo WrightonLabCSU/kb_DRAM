@@ -163,12 +163,11 @@ def generate_genomes(annotations, genes_nucl_loc, genes_aa_loc, assembly_ref_dic
                   "dna_size": dna_size,
                   "reference_annotation": 0}
 
-        genome_object_name = '%s_genome' % genome_name
         genome_object = {"workspace": workspace,
-                         "name": genome_object_name,
+                         "name": '%s_genome' % genome_name,
                          "data": genome,
                          "provenance": provenance}
-        genome_objects.append(genome_object)
+        genome_objects[genome_name] = genome_object
     return genome_objects
 
 
@@ -219,12 +218,11 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
             'term_count': len(set(ec_terms))  # not used in the api
         }
 
-        genome_object_name = '%s_genome' % genome_name
-        genome_ref = genome_ref_dict[genome_object_name]
+        genome_ref = genome_ref_dict[genome_name]
 
         ontology_event = {
             "input_ref": genome_ref,
-            "output_name": genome_object_name,
+            "output_name": '%s_genome' % genome_name,
             "input_workspace": workspace,
             "workspace-url": workspace_url,
             "events": [kegg_ontology, ec_ontology],
