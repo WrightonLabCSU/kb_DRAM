@@ -95,7 +95,7 @@ def get_distill_files(distill_output_dir, output_files=None):
 def generate_genomes(annotations, genes_nucl_loc, genes_aa_loc, assembly_ref_dict, assemblies, workspace, provenance):
     genes_nucl = {i.metadata['id']: i for i in read_sequence(genes_nucl_loc, format='fasta')}
     genes_aa = {i.metadata['id']: i for i in read_sequence(genes_aa_loc, format='fasta')}
-    genome_objects = list()
+    genome_objects = dict()
     for genome_name, genome_annotations in annotations.groupby('fasta'):
         # set scientific name, domain and genetic code
         if 'bin_taxonomy' in genome_annotations.columns:  # assuming gtdb taxa strings
