@@ -88,9 +88,9 @@ class kb_DRAM:
             data_loaded = yaml.load(stream)
         version = str(data_loaded['module-version'])
         min_contig_size = params['min_contig_size']
-        trans_table = params['trans_table']
+        trans_table = str(params['trans_table'])
         bitscore = params['bitscore']
-        rbh_bitscore = params['bitscore']
+        rbh_bitscore = params['rbh_bitscore']
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
         output_objects = []
 
@@ -212,7 +212,7 @@ class kb_DRAM:
         version = str(data_loaded['module-version'])
         genome_input_ref = params['genome_input_ref']
         bitscore = params['bitscore']
-        rbh_bitscore = params['bitscore']
+        rbh_bitscore = params['rbh_bitscore']
 
         # create Util objects
         wsClient = workspaceService(self.workspaceURL, token=ctx['token'])
@@ -317,9 +317,9 @@ class kb_DRAM:
         # setup
         affi_contigs_shock_id = params['affi_contigs_shock_id']
         min_contig_size = params['min_contig_size']
-        trans_table = params['trans_table']
+        trans_table = str(params['trans_table'])
         bitscore = params['bitscore']
-        rbh_bitscore = params['bitscore']
+        rbh_bitscore = params['rbh_bitscore']
 
         assembly_util = AssemblyUtil(self.callback_url)
         datafile_util = DataFileUtil(self.callback_url)
