@@ -222,7 +222,8 @@ class kb_DRAM:
         # get genomes
         genome_dir = os.path.join(self.shared_folder, 'genomes')
         os.mkdir(genome_dir)
-        genome_input_type = wsClient.get_object_info_new({'objects': [{'ref': genome_input_ref}]})[0][2]
+        genome_info = wsClient.get_object_info_new({'objects': [{'ref': genome_input_ref}]})[0]
+        genome_input_type = genome_info[2]
         faa_locs = list()
         genome_ref_dict = {}
         if 'GenomeSet' in genome_input_type:
@@ -248,7 +249,7 @@ class kb_DRAM:
                 genome_ref_dict[file_name] = genome_ref
         else:
             # this makes the names match if you are doing a genome or genomeSet
-            faa_file = 'DRAM.%s.faa' % genome_input_ref.replace('/', '-')
+            faa_file = 'DRAM.%s.faa' % genome_info[1].replace('/', '-')
             faa_object = object_to_file_utils.GenomeToFASTA({"genome_ref": genome_input_ref,
                                                              "file": faa_file,
                                                              "dir": genome_dir,
