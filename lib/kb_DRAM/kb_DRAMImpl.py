@@ -100,7 +100,7 @@ class kb_DRAM:
         genome_util = GenomeFileUtil(self.callback_url)
 
         # set DRAM database locations
-        print(dram_version)
+        print('DRAM version: %s' % dram_version)
         import_config('/data/DRAM_databases/CONFIG')
         # This is a hack to get around a bug in my database setup
         set_database_paths(description_db_loc='/data/DRAM_databases/description_db.sqlite')
@@ -219,7 +219,7 @@ class kb_DRAM:
         object_to_file_utils = KBaseDataObjectToFileUtils(self.callback_url, token=ctx['token'])
 
         # set DRAM database locations
-        print(dram_version)
+        print('DRAM version: %s' % dram_version)
         import_config('/data/DRAM_databases/CONFIG')
         # This is a hack to get around a bug in my database setup
         set_database_paths(description_db_loc='/data/DRAM_databases/description_db.sqlite')
@@ -341,7 +341,7 @@ class kb_DRAM:
         })['file_path']
 
         # set DRAM database locations
-        print(dram_version)
+        print('DRAM version: %s' % dram_version)
         import_config('/data/DRAM_databases/CONFIG')
         # This is a hack to get around a bug in my database setup
         set_database_paths(description_db_loc='/data/DRAM_databases/description_db.sqlite')
