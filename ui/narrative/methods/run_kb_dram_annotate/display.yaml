@@ -45,7 +45,30 @@ parameters :
         ui-name: |
             Minimum contig length
         short-hint: |
-            Contigs shorter than this length will not be annotated (default: 2500)
+            Contigs shorter than this length will not be annotated
+        placeholder: |
+            2500
+    trans_table:
+        ui-name: |
+            Translation table
+        short-hint: |
+            Genetic code to be used in translating predicted genes to amino acids
+        placeholder: |
+            11
+    bitscore:
+        ui-name: |
+            Bit score threshold
+        short-hint: |
+            Bit score threshold to assign a database hit in blast-style searches
+        placeholder: |
+            60
+    rbh_bitscore:
+        ui-name: |
+            Reverse search bit score threshold
+        short-hint: |
+            Reverse search bit score threshold to assign a database hit in reciprocal best hit blast-style searches
+        placeholder: |
+            350
     output_name:
         ui-name: |
             Output GenomeSet Name

@@ -34,6 +34,20 @@ parameters :
             Genome/genome set to be annotated
         short-hint : |
             The genome(s) you want to annotate with DRAM
+    bitscore:
+        ui-name: |
+            Bit score threshold
+        short-hint: |
+            Bit score threshold to assign a database hit in blast-style searches
+        placeholder: |
+            60
+    rbh_bitscore:
+        ui-name: |
+            Reverse search bit score threshold
+        short-hint: |
+            Reverse search bit score threshold to assign a database hit in reciprocal best hit blast-style searches
+        placeholder: |
+            350
 
 description : |
     <p>DRAM will annotate genomes and provide summarization of the metabolisms each genome is capable of. DRAM is most useful for annotating genome sets where the DRAM product can be used to compare the metabolic profiles of each genome.</p>

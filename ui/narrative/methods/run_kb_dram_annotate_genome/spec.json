@@ -20,6 +20,30 @@
             "text_options": {
                 "valid_ws_types": [ "KBaseGenomes.Genome", "KBaseCollections.GenomeSet", "KBaseSearch.GenomeSet" ]
             }
+        },
+        {
+            "id": "bitscore",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "60" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "int",
+                "min_integer" : 0
+            }
+        },
+        {
+            "id": "rbh_bitscore",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "350" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "int",
+                "min_integer" : 0
+            }
         }
     ],
     "behavior": {
@@ -38,6 +62,12 @@
                     "input_parameter": "genome_input_ref",
                     "target_property": "genome_input_ref",
                     "target_type_transform": "resolved-ref"
+                },{
+                    "input_parameter": "bitscore",
+                    "target_property": "bitscore"
+                },{
+                    "input_parameter": "rbh_bitscore",
+                    "target_property": "rbh_bitscore"
                 }
             ],
             "output_mapping": [

@@ -88,6 +88,9 @@ class kb_DRAM:
             data_loaded = yaml.load(stream)
         version = str(data_loaded['module-version'])
         min_contig_size = params['min_contig_size']
+        trans_table = params['trans_table']
+        bitscore = params['bitscore']
+        rbh_bitscore = params['bitscore']
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
         output_objects = []
 
@@ -114,7 +117,8 @@ class kb_DRAM:
                              assembly_ref for assembly_ref, assembly_data in assemblies.items()}
 
         # annotate and distill with DRAM
-        annotate_bins(fasta_locs, output_dir, min_contig_size, low_mem_mode=True, rename_bins=False, keep_tmp_dir=False,
+        annotate_bins(fasta_locs, output_dir, min_contig_size, trans_table=trans_table, bit_score_threshold=bitscore,
+                      rbh_bit_score_threshold=rbh_bitscore, low_mem_mode=True, rename_bins=False, keep_tmp_dir=False,
                       threads=4, verbose=False)
         output_files = get_annotation_files(output_dir)
         distill_output_dir = os.path.join(output_dir, 'distilled')
@@ -207,6 +211,8 @@ class kb_DRAM:
             data_loaded = yaml.load(stream)
         version = str(data_loaded['module-version'])
         genome_input_ref = params['genome_input_ref']
+        bitscore = params['bitscore']
+        rbh_bitscore = params['bitscore']
 
         # create Util objects
         wsClient = workspaceService(self.workspaceURL, token=ctx['token'])
@@ -267,7 +273,8 @@ class kb_DRAM:
 
         # annotate and distill with DRAM
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
-        annotate_called_genes(faa_locs, output_dir, low_mem_mode=True, keep_tmp_dir=False, threads=4, verbose=False)
+        annotate_called_genes(faa_locs, output_dir, bit_score_threshold=bitscore, rbh_bit_score_threshold=rbh_bitscore,
+                              low_mem_mode=True, keep_tmp_dir=False, threads=4, verbose=False)
         output_files = get_annotation_files(output_dir)
         distill_output_dir = os.path.join(output_dir, 'distilled')
         summarize_genomes(output_files['annotations']['path'], output_files['trnas']['path'],
@@ -310,6 +317,9 @@ class kb_DRAM:
         # setup
         affi_contigs_shock_id = params['affi_contigs_shock_id']
         min_contig_size = params['min_contig_size']
+        trans_table = params['trans_table']
+        bitscore = params['bitscore']
+        rbh_bitscore = params['bitscore']
 
         assembly_util = AssemblyUtil(self.callback_url)
         datafile_util = DataFileUtil(self.callback_url)
@@ -345,7 +355,8 @@ class kb_DRAM:
 
         # annotate and distill
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
-        annotate_vgfs(cleaned_fasta, cleaned_affi_contigs, output_dir, min_contig_size, verbose=False)
+        annotate_vgfs(cleaned_fasta, cleaned_affi_contigs, output_dir, min_contig_size, trans_table=trans_table,
+                      bit_score_threshold=bitscore, rbh_bit_score_threshold=rbh_bitscore, verbose=False)
         output_files = get_annotation_files(output_dir)
         distill_output_dir = os.path.join(output_dir, 'distilled')
         summarize_vgfs(output_files['annotations']['path'], distill_output_dir, groupby_column='scaffold')

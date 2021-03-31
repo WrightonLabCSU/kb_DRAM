@@ -45,6 +45,43 @@
             }
         },
         {
+            "id": "trans_table",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "11" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "int",
+                "min_integer" : 1,
+                "max_integer": 25
+            }
+        },
+        {
+            "id": "bitscore",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "60" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "int",
+                "min_integer" : 0
+            }
+        },
+        {
+            "id": "rbh_bitscore",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "350" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "int",
+                "min_integer" : 0
+            }
+        },
+        {
             "id": "output_name",
             "optional": false,
             "advanced": false,
@@ -79,6 +116,15 @@
                 },{
                     "input_parameter": "min_contig_size",
                     "target_property": "min_contig_size"
+                },{
+                    "input_parameter": "trans_table",
+                    "target_property": "trans_table"
+                },{
+                    "input_parameter": "bitscore",
+                    "target_property": "bitscore"
+                },{
+                    "input_parameter": "rbh_bitscore",
+                    "target_property": "rbh_bitscore"
                 },{
                     "input_parameter": "output_name",
                     "target_property": "output_name"
