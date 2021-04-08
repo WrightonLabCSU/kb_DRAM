@@ -4,6 +4,7 @@ import logging
 import os
 import pandas as pd
 import yaml
+import warnings
 
 from mag_annotator import __version__ as dram_version
 from mag_annotator.database_processing import import_config, set_database_paths, print_database_locations
@@ -314,6 +315,8 @@ class kb_DRAM:
         # ctx is the context object
         # return variables are: output
         #BEGIN run_kb_dramv_annotate
+        warnings.filterwarnings("ignore")
+
         # setup
         affi_contigs_shock_id = params['affi_contigs_shock_id']
         min_contig_size = params['min_contig_size']
@@ -341,11 +344,11 @@ class kb_DRAM:
         })['file_path']
 
         # set DRAM database locations
-        print('DRAM version: %s' % dram_version)
+        # print('DRAM version: %s' % dram_version)
         import_config('/data/DRAM_databases/CONFIG')
         # This is a hack to get around a bug in my database setup
         set_database_paths(description_db_loc='/data/DRAM_databases/description_db.sqlite')
-        print_database_locations()
+        # print_database_locations()
 
         # clean affi contigs file
         cleaned_fasta = os.path.join(self.shared_folder, '%s.cleaned.fasta' % os.path.basename(fasta))
