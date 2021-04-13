@@ -238,7 +238,7 @@ class kb_DRAM:
             genome_ref_dict = {name: genome_dict['ref'] for name, genome_dict in genomeSet_object['elements']}
         else:
             genome_ref_dict[genome_info[1]] = genome_input_ref
-        for genome_name, genome_ref in genome_ref_dict.values():
+        for genome_name, genome_ref in genome_ref_dict.items():
             # this makes the names match if you are doing a genome or genomeSet
             faa_file = '%s.faa' % genome_name
             faa_object = object_to_file_utils.GenomeToFASTA({"genome_ref": genome_ref,
