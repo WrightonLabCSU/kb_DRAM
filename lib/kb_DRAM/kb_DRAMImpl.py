@@ -252,8 +252,6 @@ class kb_DRAM:
                                                              "record_desc_pattern": None,
                                                              "case": None,
                                                              "linewrap": None})
-            if faa_file != faa_object['fasta_file_path']:
-                raise ValueError('GenomeToFASTA input and output file paths are not the same: %s, %s' % (faa_file, faa_object['fasta_file_path']))
             faa_locs.append(faa_object['fasta_file_path'])
 
         # annotate and distill with DRAM
