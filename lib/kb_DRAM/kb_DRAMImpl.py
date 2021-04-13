@@ -234,30 +234,14 @@ class kb_DRAM:
         faa_locs = list()
         genome_ref_dict = {}
         if 'GenomeSet' in genome_input_type:
-            faa_objects = object_to_file_utils.GenomeSetToFASTA({"genomeSet_ref": genome_input_ref,
-                                                                 "file": 'DRAM',
-                                                                 "dir": genome_dir,
-                                                                 "console": [],
-                                                                 "invalid_msgs": [],
-                                                                 "residue_type": 'P',
-                                                                 "feature_type": None,
-                                                                 "record_id_pattern": None,
-                                                                 "record_desc_pattern": None,
-                                                                 "case": None,
-                                                                 "linewrap": None,
-                                                                 "merge_fasta_files": False})
-            # DRAM needs a fasta file ending so need to move to add ending
-            for fasta_path in faa_objects['fasta_file_path_list']:
-                new_path = '%s.faa' % fasta_path
-                os.rename(fasta_path, new_path)
-                faa_locs.append(new_path)
-                file_name = os.path.splitext(os.path.basename(remove_suffix(new_path, '.gz')))[0]
-                genome_ref = file_name.split('.')[1].replace('-', '/')
-                genome_ref_dict[file_name] = genome_ref
+            genomeSet_object = wsClient.get_objects2({'objects': [{'ref': genome_input_ref}]})['data'][0]['data']
+            genome_ref_dict = {name: genome_dict['ref'] for name, genome_dict in genomeSet_object['elements']}
         else:
+            genome_ref_dict[genome_info[1]] = genome_input_ref
+        for genome_name, genome_ref in genome_ref_dict.values():
             # this makes the names match if you are doing a genome or genomeSet
-            faa_file = 'DRAM.%s.faa' % genome_info[1].replace('/', '-')
-            faa_object = object_to_file_utils.GenomeToFASTA({"genome_ref": genome_input_ref,
+            faa_file = '%s.faa' % genome_name
+            faa_object = object_to_file_utils.GenomeToFASTA({"genome_ref": genome_ref,
                                                              "file": faa_file,
                                                              "dir": genome_dir,
                                                              "console": [],
@@ -268,8 +252,8 @@ class kb_DRAM:
                                                              "record_desc_pattern": None,
                                                              "case": None,
                                                              "linewrap": None})
-            file_name = os.path.splitext(os.path.basename(remove_suffix(faa_object['fasta_file_path'], '.gz')))[0]
-            genome_ref_dict[file_name] = genome_input_ref
+            if faa_file != faa_object['fasta_file_path']:
+                raise ValueError('GenomeToFASTA input and output file paths are not the same: %s, %s' % (faa_file, faa_object['fasta_file_path']))
             faa_locs.append(faa_object['fasta_file_path'])
 
         # annotate and distill with DRAM

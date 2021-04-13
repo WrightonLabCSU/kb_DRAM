@@ -222,7 +222,7 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
 
         ontology_event = {
             "input_ref": genome_ref,
-            "output_name": '%s_genome' % genome_name,
+            "output_name": genome_name,
             "input_workspace": workspace,
             "workspace-url": workspace_url,
             "events": [kegg_ontology, ec_ontology],
