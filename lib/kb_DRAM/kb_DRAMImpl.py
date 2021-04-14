@@ -123,7 +123,6 @@ class kb_DRAM:
                       threads=4, verbose=False)
         output_files = get_annotation_files(output_dir)
         distill_output_dir = os.path.join(output_dir, 'distilled')
-        print(os.listdir(output_dir))
         summarize_genomes(output_files['annotations']['path'], output_files['trnas']['path'],
                           output_files['rrnas']['path'], output_dir=distill_output_dir, groupby_column='fasta')
         output_files = get_distill_files(distill_output_dir, output_files)
@@ -235,7 +234,7 @@ class kb_DRAM:
         genome_ref_dict = {}
         if 'GenomeSet' in genome_input_type:
             genomeSet_object = wsClient.get_objects2({'objects': [{'ref': genome_input_ref}]})['data'][0]['data']
-            genome_ref_dict = {name: genome_dict['ref'] for name, genome_dict in genomeSet_object['elements']}
+            genome_ref_dict = {name: genome_dict['ref'] for name, genome_dict in genomeSet_object['elements'].items()}
         else:
             genome_ref_dict[genome_info[1]] = genome_input_ref
         for genome_name, genome_ref in genome_ref_dict.items():
@@ -269,7 +268,7 @@ class kb_DRAM:
         anno_api = annotation_ontology_api(service_ver="beta")
         ontology_events = add_ontology_terms(annotations, "DRAM genome annotated", version, params['workspace_name'],
                                              self.workspaceURL, genome_ref_dict)
-        [anno_api.add_annotation_ontology_events(i) for i in ontology_events]
+        annotation_events = [anno_api.add_annotation_ontology_events(i) for i in ontology_events]
 
         # generate report
         product_html_loc = os.path.join(distill_output_dir, 'product.html')
@@ -326,11 +325,11 @@ class kb_DRAM:
         })['file_path']
 
         # set DRAM database locations
-        # print('DRAM version: %s' % dram_version)
+        print('DRAM version: %s' % dram_version)
         import_config('/data/DRAM_databases/CONFIG')
         # This is a hack to get around a bug in my database setup
         set_database_paths(description_db_loc='/data/DRAM_databases/description_db.sqlite')
-        # print_database_locations()
+        print_database_locations()
 
         # clean affi contigs file
         cleaned_fasta = os.path.join(self.shared_folder, '%s.cleaned.fasta' % os.path.basename(fasta))
