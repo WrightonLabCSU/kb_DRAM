@@ -234,7 +234,10 @@ class kb_DRAM:
         genome_ref_dict = {}
         if 'GenomeSet' in genome_input_type:
             genomeSet_object = wsClient.get_objects2({'objects': [{'ref': genome_input_ref}]})['data'][0]['data']
-            genome_ref_dict = {name: genome_dict['ref'] for name, genome_dict in genomeSet_object['elements'].items()}
+            for ref_dict in genomeSet_object['elements'].values():
+                genome_ref = ref_dict['ref']
+                name = wsClient.get_object_info_new({'objects': [{'ref': genome_ref}]})[0][1]
+                genome_ref_dict[name] = genome_ref
         else:
             genome_ref_dict[genome_info[1]] = genome_input_ref
         for genome_name, genome_ref in genome_ref_dict.items():
