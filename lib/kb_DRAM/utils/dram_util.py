@@ -220,18 +220,31 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
 
         genome_ref = genome_ref_dict[genome_name]
 
-        ontology_event = {
+        kegg_ontology_event = {
             "input_ref": genome_ref,
             "output_name": genome_name,
             "input_workspace": workspace,
             "workspace-url": workspace_url,
-            "events": [kegg_ontology, ec_ontology],
+            "events": [kegg_ontology],
             "timestamp": datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
             "output_workspace": workspace,
             "save": 1
         }
 
-        ontology_events.append(ontology_event)
+        ontology_events.append(kegg_ontology_event)
+
+        ec_ontology_event = {
+            "input_ref": genome_ref,
+            "output_name": genome_name,
+            "input_workspace": workspace,
+            "workspace-url": workspace_url,
+            "events": [ec_ontology],
+            "timestamp": datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
+            "output_workspace": workspace,
+            "save": 1
+        }
+
+        ontology_events.append(ec_ontology_event)
     return ontology_events
 
 
