@@ -5,7 +5,6 @@ import datetime
 from skbio import read as read_sequence
 import hashlib
 import re
-import time
 
 
 def get_annotation_files(output_dir, output_files=None):
@@ -221,32 +220,18 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
 
         genome_ref = genome_ref_dict[genome_name]
 
-        kegg_ontology_event = {
+        ontology_event = {
             "input_ref": genome_ref,
             "output_name": genome_name,
             "input_workspace": workspace,
             "workspace-url": workspace_url,
-            "events": [kegg_ontology],
+            "events": [kegg_ontology, ec_ontology],
             "timestamp": datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
             "output_workspace": workspace,
             "save": 1
         }
 
-        ontology_events.append(kegg_ontology_event)
-
-        time.sleep(2)
-        ec_ontology_event = {
-            "input_ref": genome_ref,
-            "output_name": genome_name,
-            "input_workspace": workspace,
-            "workspace-url": workspace_url,
-            "events": [ec_ontology],
-            "timestamp": datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
-            "output_workspace": workspace,
-            "save": 1
-        }
-
-        ontology_events.append(ec_ontology_event)
+        ontology_events.append(ontology_event)
     return ontology_events
 
 
