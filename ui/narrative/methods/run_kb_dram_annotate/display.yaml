@@ -36,7 +36,7 @@ parameters :
             The contig collection(s) you want to annotate with DRAM
     is_metagenome :
         ui-name: |
-            Is metagenome
+            Is metagenome?
         short-hint: |
             Check the box if this is a metagenome assembly and not a single genome assembly
     desc :

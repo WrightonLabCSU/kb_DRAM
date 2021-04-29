@@ -88,6 +88,9 @@ class kb_DRAM:
         with open("/kb/module/kbase.yml", 'r') as stream:
             data_loaded = yaml.load(stream)
         version = str(data_loaded['module-version'])
+
+        print(params)
+
         is_metagenome = params['is_metagenome']
         min_contig_size = params['min_contig_size']
         trans_table = str(params['trans_table'])
