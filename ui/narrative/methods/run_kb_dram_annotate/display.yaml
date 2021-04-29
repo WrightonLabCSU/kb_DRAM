@@ -34,7 +34,12 @@ parameters :
             Assembly/assembly set to be annotated
         short-hint : |
             The contig collection(s) you want to annotate with DRAM
-    desc:
+    is_metagenome :
+        ui-name: |
+            Is metagenome
+        short-hint: |
+            Check the box if this is a metagenome assembly and not a single genome assembly
+    desc :
         ui-name: |
             Description
         short-hint: |
@@ -48,28 +53,28 @@ parameters :
             Contigs shorter than this length will not be annotated
         placeholder: |
             2500
-    trans_table:
+    trans_table :
         ui-name: |
             Translation table
         short-hint: |
             Genetic code to be used in translating predicted genes to amino acids
         placeholder: |
             11
-    bitscore:
+    bitscore :
         ui-name: |
             Bit score threshold
         short-hint: |
             Bit score threshold to assign a database hit in blast-style searches
         placeholder: |
             60
-    rbh_bitscore:
+    rbh_bitscore :
         ui-name: |
             Reverse search bit score threshold
         short-hint: |
             Reverse search bit score threshold to assign a database hit in reciprocal best hit blast-style searches
         placeholder: |
             350
-    output_name:
+    output_name :
         ui-name: |
             Output GenomeSet Name
         short-hint: |

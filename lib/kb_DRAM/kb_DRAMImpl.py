@@ -88,6 +88,7 @@ class kb_DRAM:
         with open("/kb/module/kbase.yml", 'r') as stream:
             data_loaded = yaml.load(stream)
         version = str(data_loaded['module-version'])
+        is_metagenome = params['is_metagenome']
         min_contig_size = params['min_contig_size']
         trans_table = str(params['trans_table'])
         bitscore = params['bitscore']
@@ -112,8 +113,6 @@ class kb_DRAM:
         # would paths ever have more than one thing?
         fasta_locs = [assembly_data['paths'][0] for assembly_ref, assembly_data in assemblies.items()]
         # get assembly refs from dram assigned genome names
-        # TODO: rewrite annotate_bins to take optional list of fasta names and pass assembly refs as list
-        # TODO: something to get rid of the very ugly and confusing assembly_ref_dict
         assembly_ref_dict = {os.path.splitext(os.path.basename(remove_suffix(assembly_data['paths'][0], '.gz')))[0]:
                              assembly_ref for assembly_ref, assembly_data in assemblies.items()}
 
@@ -127,54 +126,57 @@ class kb_DRAM:
                           output_files['rrnas']['path'], output_dir=distill_output_dir, groupby_column='fasta')
         output_files = get_distill_files(distill_output_dir, output_files)
 
-        # generate genome files
-        annotations = pd.read_csv(output_files['annotations']['path'], sep='\t', index_col=0)
-        genome_objects = generate_genomes(annotations, output_files['genes_fna']['path'],
-                                          output_files['genes_faa']['path'], assembly_ref_dict, assemblies,
-                                          params["workspace_name"], ctx.provenance())
-
-        genome_ref_dict = dict()
-        genome_set_elements = dict()
-        for genome_name, genome_object in genome_objects.items():
-            info = genome_util.save_one_genome(genome_object)["info"]
-            genome_ref = '%s/%s/%s' % (info[6], info[0], info[4])
-            genome_set_elements[genome_object["name"]] = {'ref': genome_ref}
-            output_objects.append({"ref": genome_ref,
-                                   "description": 'Annotated Genome'})
-            genome_ref_dict[genome_name] = genome_ref
-
-        # add ontology terms
-        anno_api = annotation_ontology_api(service_ver="beta")
-        ontology_events = add_ontology_terms(annotations, params['desc'], version, params['workspace_name'],
-                                             self.workspaceURL, genome_ref_dict)
-        [anno_api.add_annotation_ontology_events(i) for i in ontology_events]
-
-        # make genome set
-        # TODO: only make genome set if there is more than one genome
-        if 'provenance' in ctx:
-            provenance = ctx['provenance']
+        if is_metagenome:
+            pass  # TODO: make annotated metagenome object
         else:
-            provenance = [{}]
-        # add additional info to provenance here, in this case the input data object reference
-        provenance[0]['input_ws_objects'] = []
-        for ass_ref in genome_ref_dict.values():
-            provenance[0]['input_ws_objects'].append(ass_ref)
-        provenance[0]['service'] = 'kb_SetUtilities'
-        provenance[0]['method'] = 'KButil_Batch_Create_GenomeSet'
-        output_genomeSet_obj = {'description': params['desc'],
-                                'elements': genome_set_elements}
-        output_genomeSet_name = params['output_name']
-        new_obj_info = wsClient.save_objects({'workspace': params['workspace_name'],
-                                              'objects': [{'type': 'KBaseSearch.GenomeSet',
-                                                           'data': output_genomeSet_obj,
-                                                           'name': output_genomeSet_name,
-                                                           'meta': {},
-                                                           'provenance': provenance
-                                                           }]
-                                              })[0]
-        genome_set_ref = '%s/%s/%s' % (new_obj_info[6], new_obj_info[0], new_obj_info[4])
-        output_objects.append({"ref": genome_set_ref,
-                               "description": params['desc']})
+            # generate genome files
+            annotations = pd.read_csv(output_files['annotations']['path'], sep='\t', index_col=0)
+            genome_objects = generate_genomes(annotations, output_files['genes_fna']['path'],
+                                              output_files['genes_faa']['path'], assembly_ref_dict, assemblies,
+                                              params["workspace_name"], ctx.provenance())
+
+            genome_ref_dict = dict()
+            genome_set_elements = dict()
+            for genome_name, genome_object in genome_objects.items():
+                info = genome_util.save_one_genome(genome_object)["info"]
+                genome_ref = '%s/%s/%s' % (info[6], info[0], info[4])
+                genome_set_elements[genome_object["name"]] = {'ref': genome_ref}
+                output_objects.append({"ref": genome_ref,
+                                       "description": 'Annotated Genome'})
+                genome_ref_dict[genome_name] = genome_ref
+
+            # add ontology terms
+            anno_api = annotation_ontology_api(service_ver="beta")
+            ontology_events = add_ontology_terms(annotations, params['desc'], version, params['workspace_name'],
+                                                 self.workspaceURL, genome_ref_dict)
+            [anno_api.add_annotation_ontology_events(i) for i in ontology_events]
+
+            # make genome set
+            # TODO: only make genome set if there is more than one genome
+            if 'provenance' in ctx:
+                provenance = ctx['provenance']
+            else:
+                provenance = [{}]
+            # add additional info to provenance here, in this case the input data object reference
+            provenance[0]['input_ws_objects'] = []
+            for ass_ref in genome_ref_dict.values():
+                provenance[0]['input_ws_objects'].append(ass_ref)
+            provenance[0]['service'] = 'kb_SetUtilities'
+            provenance[0]['method'] = 'KButil_Batch_Create_GenomeSet'
+            output_genomeSet_obj = {'description': params['desc'],
+                                    'elements': genome_set_elements}
+            output_genomeSet_name = params['output_name']
+            new_obj_info = wsClient.save_objects({'workspace': params['workspace_name'],
+                                                  'objects': [{'type': 'KBaseSearch.GenomeSet',
+                                                               'data': output_genomeSet_obj,
+                                                               'name': output_genomeSet_name,
+                                                               'meta': {},
+                                                               'provenance': provenance
+                                                               }]
+                                                  })[0]
+            genome_set_ref = '%s/%s/%s' % (new_obj_info[6], new_obj_info[0], new_obj_info[4])
+            output_objects.append({"ref": genome_set_ref,
+                                   "description": params['desc']})
 
         # generate report
         product_html_loc = os.path.join(distill_output_dir, 'product.html')
