@@ -305,7 +305,7 @@ class kb_DRAM:
         warnings.filterwarnings("ignore")
 
         # setup
-        affi_contigs_shock_id = params['affi_contigs_shock_id']
+        affi_contigs_shock_ids = params['affi_contigs_shock_id']
         min_contig_size = params['min_contig_size']
         trans_table = str(params['trans_table'])
         bitscore = params['bitscore']
@@ -314,7 +314,7 @@ class kb_DRAM:
         assembly_util = AssemblyUtil(self.callback_url)
         datafile_util = DataFileUtil(self.callback_url)
 
-        # get contigs
+        # get contigs and merge
         assembly = assembly_util.get_fastas({'ref_lst': [params['assembly_input_ref']]})
         fasta = os.path.join(self.shared_folder, 'merged_contigs.fasta')
         with open(fasta, 'w') as f:
@@ -322,13 +322,19 @@ class kb_DRAM:
                 for line in open(fasta_path):
                     f.write(line)
 
-        # get affi contigs
+        # get affi contigs, read all and merge
         affi_contigs_path = os.path.join(self.shared_folder, 'VIRSorter_affi-contigs.tab')
-        affi_contigs = datafile_util.shock_to_file({
-            'shock_id': affi_contigs_shock_id,
-            'file_path': affi_contigs_path,
-            'unpack': 'unpack'
-        })['file_path']
+        with open(affi_contigs_path, 'w') as f:
+            for affi_contigs_shock_id in affi_contigs_shock_ids:
+                temp_affi_contigs_path = os.path.join(self.shared_folder, 'temp_VIRSorter_affi-contigs.tab')
+                temp_affi_contigs = datafile_util.shock_to_file({
+                    'shock_id': affi_contigs_shock_id,
+                    'file_path': temp_affi_contigs_path,
+                    'unpack': 'unpack'
+                })['file_path']
+                for line in open(temp_affi_contigs):
+                    f.write(line)
+                os.remove(temp_affi_contigs)
 
         # set DRAM database locations
         print('DRAM version: %s' % dram_version)
@@ -341,7 +347,7 @@ class kb_DRAM:
         cleaned_fasta = os.path.join(self.shared_folder, '%s.cleaned.fasta' % os.path.basename(fasta))
         remove_bad_chars(input_fasta=fasta, output=cleaned_fasta)
         cleaned_affi_contigs = os.path.join(self.shared_folder, 'VIRSorter_affi-contigs.cleaned.tab')
-        remove_bad_chars(input_virsorter_affi_contigs=affi_contigs, output=cleaned_affi_contigs)
+        remove_bad_chars(input_virsorter_affi_contigs=affi_contigs_path, output=cleaned_affi_contigs)
 
         # annotate and distill
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
