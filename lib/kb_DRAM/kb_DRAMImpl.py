@@ -315,10 +315,11 @@ class kb_DRAM:
         datafile_util = DataFileUtil(self.callback_url)
 
         # get contigs and merge
-        assembly = assembly_util.get_fastas({'ref_lst': [params['assembly_input_ref']]})
+        assemblies = assembly_util.get_fastas({'ref_lst': [params['assembly_input_ref']]})
         fasta = os.path.join(self.shared_folder, 'merged_contigs.fasta')
         with open(fasta, 'w') as f:
-            for fasta_path in assembly[params['assembly_input_ref']]['paths']:
+            for assembly_ref, assembly_data in assemblies.items():
+                fasta_path = assembly_data['paths'][0]
                 for line in open(fasta_path):
                     f.write(line)
 
