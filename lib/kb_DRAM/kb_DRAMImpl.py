@@ -89,8 +89,6 @@ class kb_DRAM:
             data_loaded = yaml.load(stream)
         version = str(data_loaded['module-version'])
 
-        print(params)
-
         is_metagenome = params['is_metagenome']
         min_contig_size = params['min_contig_size']
         trans_table = str(params['trans_table'])
@@ -264,7 +262,7 @@ class kb_DRAM:
         # annotate and distill with DRAM
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
         annotate_called_genes(faa_locs, output_dir, bit_score_threshold=bitscore, rbh_bit_score_threshold=rbh_bitscore,
-                              low_mem_mode=True, keep_tmp_dir=False, threads=4, verbose=False)
+                              low_mem_mode=True, rename_genes=False, keep_tmp_dir=False, threads=4, verbose=False)
         output_files = get_annotation_files(output_dir)
         distill_output_dir = os.path.join(output_dir, 'distilled')
         summarize_genomes(output_files['annotations']['path'], output_files['trnas']['path'],

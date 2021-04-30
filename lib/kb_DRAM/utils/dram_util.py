@@ -195,24 +195,27 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
                     ec_terms += current_ec_terms
                     ec_ontology_terms[gene] = [{'term': i} for i in current_ec_terms]
 
+        kegg_timestamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        kegg_description = '%s_%s_%s' % (description, 'KO', kegg_timestamp)
         kegg_ontology = {
-            'event_id': description,
-            'description': description,
+            'description': kegg_description,
             'ontology_id': 'KO',
             'method': 'DRAM',  # from above
             'method_version': version,
-            "timestamp": datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
+            "timestamp": kegg_timestamp,
             'ontology_terms': kegg_ontology_terms,
             'gene_count': len(annotations),  # not used in the api
             'term_count': len(set(ko_terms))  # not used in the api
         }
+
+        ec_timestamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        ec_description = '%s_%s_%s' % (description, 'EC', kegg_timestamp)
         ec_ontology = {
-            'event_id': description,
-            'description': description,
+            'description': ec_description,
             'ontology_id': 'EC',
             'method': 'DRAM',  # from above
             'method_version': version,
-            "timestamp": datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"),
+            "timestamp": ec_timestamp,
             'ontology_terms': ec_ontology_terms,
             'gene_count': len(annotations),  # not used in the api
             'term_count': len(set(ec_terms))  # not used in the api
