@@ -144,7 +144,7 @@ class kb_DRAM:
                 genome_set_elements[genome_object["name"]] = {'ref': genome_ref}
                 output_objects.append({"ref": genome_ref,
                                        "description": 'Annotated Genome'})
-                genome_ref_dict[genome_name] = genome_ref
+                genome_ref_dict[genome_object["name"]] = genome_ref
 
             # add ontology terms
             anno_api = annotation_ontology_api(service_ver="beta")

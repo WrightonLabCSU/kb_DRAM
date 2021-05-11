@@ -164,7 +164,7 @@ def generate_genomes(annotations, genes_nucl_loc, genes_aa_loc, assembly_ref_dic
                   "reference_annotation": 0}
 
         genome_object = {"workspace": workspace,
-                         "name": '%s_genome' % genome_name,
+                         "name": '%s_DRAM' % genome_name,
                          "data": genome,
                          "provenance": provenance}
         genome_objects[genome_name] = genome_object
