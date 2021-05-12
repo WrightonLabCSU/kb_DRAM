@@ -138,7 +138,7 @@ class kb_DRAM:
 
             genome_ref_dict = dict()
             genome_set_elements = dict()
-            for genome_object in genome_objects.items():
+            for genome_object in genome_objects:
                 info = genome_util.save_one_genome(genome_object)["info"]
                 genome_ref = '%s/%s/%s' % (info[6], info[0], info[4])
                 genome_set_elements[genome_object["name"]] = {'ref': genome_ref}
