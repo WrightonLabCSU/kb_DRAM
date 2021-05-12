@@ -138,7 +138,7 @@ class kb_DRAM:
 
             genome_ref_dict = dict()
             genome_set_elements = dict()
-            for genome_name, genome_object in genome_objects.items():
+            for genome_object in genome_objects.items():
                 info = genome_util.save_one_genome(genome_object)["info"]
                 genome_ref = '%s/%s/%s' % (info[6], info[0], info[4])
                 genome_set_elements[genome_object["name"]] = {'ref': genome_ref}
@@ -159,9 +159,7 @@ class kb_DRAM:
             else:
                 provenance = [{}]
             # add additional info to provenance here, in this case the input data object reference
-            provenance[0]['input_ws_objects'] = []
-            for ass_ref in genome_ref_dict.values():
-                provenance[0]['input_ws_objects'].append(ass_ref)
+            provenance[0]['input_ws_objects'] = list(genome_ref_dict.values())
             provenance[0]['service'] = 'kb_SetUtilities'
             provenance[0]['method'] = 'KButil_Batch_Create_GenomeSet'
             output_genomeSet_obj = {'description': params['desc'],

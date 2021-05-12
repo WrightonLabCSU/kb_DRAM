@@ -95,8 +95,8 @@ def get_distill_files(distill_output_dir, output_files=None):
 def generate_genomes(annotations, genes_nucl_loc, genes_aa_loc, assembly_ref_dict, assemblies, workspace, provenance):
     genes_nucl = {i.metadata['id']: i for i in read_sequence(genes_nucl_loc, format='fasta')}
     genes_aa = {i.metadata['id']: i for i in read_sequence(genes_aa_loc, format='fasta')}
-    genome_objects = dict()
-    for genome_name, genome_annotations in annotations.groupby('fasta'):
+    genome_objects = list()
+    for fasta_name, genome_annotations in annotations.groupby('fasta'):
         # set scientific name, domain and genetic code
         if 'bin_taxonomy' in genome_annotations.columns:  # assuming gtdb taxa strings
             scientific_name = genome_annotations['bin_taxonomy'].iloc[0]  # not really the scientific name, whatever
@@ -105,7 +105,7 @@ def generate_genomes(annotations, genes_nucl_loc, genes_aa_loc, assembly_ref_dic
             scientific_name = 'Unknown'
             domain = 'Unknown'
         # get assembly information
-        assembly_ref = assembly_ref_dict[genome_name]
+        assembly_ref = assembly_ref_dict[fasta_name]
         sequence = ''.join([str(i) for i in read_sequence(assemblies[assembly_ref]['paths'][0], format='fasta')])
         sequence = sequence.upper()
         dna_size = len(sequence)
@@ -164,16 +164,16 @@ def generate_genomes(annotations, genes_nucl_loc, genes_aa_loc, assembly_ref_dic
                   "reference_annotation": 0}
 
         genome_object = {"workspace": workspace,
-                         "name": '%s_DRAM' % genome_name,
+                         "name": '%s_DRAM' % fasta_name,
                          "data": genome,
                          "provenance": provenance}
-        genome_objects[genome_name] = genome_object
+        genome_objects.append(genome_object)
     return genome_objects
 
 
 def add_ontology_terms(annotations, description, version, workspace, workspace_url, genome_ref_dict):
     ontology_events = []
-    for genome_name, genome_annotations in annotations.groupby('fasta'):
+    for fasta_name, genome_annotations in annotations.groupby('fasta'):
         # add ontology terms
         # TODO: also add EC and other ontologies
 
@@ -223,14 +223,15 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
 
         # this is because when annotating assemblies we rename genomes based on input name and _DRAM
         # TODO: turn '%s_DRAM' in an argument with desired replacement or None for no replacement
-        if genome_name in genome_ref_dict:
-            genome_ref = genome_ref_dict[genome_name]
-        elif '%s_DRAM' % genome_name in genome_ref_dict:
-            genome_ref = genome_ref_dict['%s_DRAM' % genome_name]
+        if fasta_name in genome_ref_dict:
+            genome_name = fasta_name
+        elif '%s_DRAM' % fasta_name in genome_ref_dict:
+            genome_name = '%s_DRAM' % fasta_name
         else:
-            raise ValueError('Genome name %s not found in genome_ref_dict with keys %s' %
-                             (genome_name, ', '.join(genome_ref_dict.keys())))
+            raise ValueError('Fasta name %s not found in genome_ref_dict with keys %s' %
+                             (fasta_name, ', '.join(genome_ref_dict.keys())))
 
+        genome_ref = genome_ref_dict[genome_name]
         ontology_event = {
             "input_ref": genome_ref,
             "output_name": genome_name,
