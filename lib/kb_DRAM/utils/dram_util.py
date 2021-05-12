@@ -221,7 +221,15 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
             'term_count': len(set(ec_terms))  # not used in the api
         }
 
-        genome_ref = genome_ref_dict[genome_name]
+        # this is because when annotating assemblies we rename genomes based on input name and _DRAM
+        # TODO: turn '%s_DRAM' in an argument with desired replacement or None for no replacement
+        if genome_name in genome_ref_dict:
+            genome_ref = genome_ref_dict[genome_name]
+        elif '%s_DRAM' % genome_name in genome_ref_dict:
+            genome_ref = genome_ref_dict['%s_DRAM' % genome_name]
+        else:
+            raise ValueError('Genome name %s not found in genome_ref_dict with keys %s' %
+                             (genome_name, ', '.join(genome_ref_dict.keys())))
 
         ontology_event = {
             "input_ref": genome_ref,
