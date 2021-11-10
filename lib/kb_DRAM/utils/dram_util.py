@@ -181,7 +181,7 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
         ko_terms = list()
         ec_ontology_terms = dict()
         ec_terms = list()
-        for gene, row in genome_annotations.iterrows(): # this is slow, could probably be an apply
+        for gene, row in genome_annotations.iterrows():  # this is slow, could probably be an apply
             # get kos
             if not pd.isna(row['kegg_id']):
                 kegg_terms = row['kegg_id'].split(',')
@@ -228,6 +228,7 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
         elif '%s_DRAM' % fasta_name in genome_ref_dict:
             genome_name = '%s_DRAM' % fasta_name
         else:
+            print(genome_ref_dict)
             raise ValueError('Fasta name %s not found in genome_ref_dict with keys %s' %
                              (fasta_name, ', '.join(genome_ref_dict.keys())))
 
