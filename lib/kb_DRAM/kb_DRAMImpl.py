@@ -25,6 +25,8 @@ from .utils.dram_util import get_annotation_files, get_distill_files, generate_g
     get_viral_distill_files
 from .utils.kbase_util import generate_product_report
 
+THREADS = 30
+
 # TODO: Fix no pfam annotations bug
 #END_HEADER
 
@@ -120,7 +122,7 @@ class kb_DRAM:
         # annotate and distill with DRAM
         annotate_bins(fasta_locs, output_dir, min_contig_size, trans_table=trans_table, bit_score_threshold=bitscore,
                       rbh_bit_score_threshold=rbh_bitscore, low_mem_mode=True, rename_bins=False, keep_tmp_dir=False,
-                      threads=4, verbose=False)
+                      threads=THREADS, verbose=False)
         output_files = get_annotation_files(output_dir)
         distill_output_dir = os.path.join(output_dir, 'distilled')
         summarize_genomes(output_files['annotations']['path'], output_files['trnas']['path'],
@@ -260,7 +262,7 @@ class kb_DRAM:
         # annotate and distill with DRAM
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
         annotate_called_genes(faa_locs, output_dir, bit_score_threshold=bitscore, rbh_bit_score_threshold=rbh_bitscore,
-                              low_mem_mode=True, rename_genes=False, keep_tmp_dir=False, threads=4, verbose=False)
+                              low_mem_mode=True, rename_genes=False, keep_tmp_dir=False, threads=THREADS, verbose=False)
         output_files = get_annotation_files(output_dir)
         distill_output_dir = os.path.join(output_dir, 'distilled')
         summarize_genomes(output_files['annotations']['path'], output_files['trnas']['path'],
@@ -352,7 +354,7 @@ class kb_DRAM:
         output_dir = os.path.join(self.shared_folder, 'DRAM_annos')
         annotate_vgfs(cleaned_fasta, cleaned_affi_contigs, output_dir, min_contig_size, trans_table=trans_table,
                       bit_score_threshold=bitscore, rbh_bit_score_threshold=rbh_bitscore, low_mem_mode=True,
-                      keep_tmp_dir=False, threads=4, verbose=False)
+                      keep_tmp_dir=False, threads=THREADS, verbose=False)
         output_files = get_annotation_files(output_dir)
         distill_output_dir = os.path.join(output_dir, 'distilled')
         summarize_vgfs(output_files['annotations']['path'], distill_output_dir, groupby_column='scaffold')
