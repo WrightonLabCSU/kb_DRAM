@@ -268,7 +268,7 @@ class kb_DRAM:
         output_files = get_distill_files(distill_output_dir, output_files)
 
         # add ontology terms
-        annotations = pd.read_csv(output_files['annotations']['path'], sep='\t', index_col=0)
+        annotations = pd.read_csv(output_files['annotations']['path'], sep='\t', index_col=0, dtype={'fasta': str})
         anno_api = annotation_ontology_api(service_ver="beta")
         ontology_events = add_ontology_terms(annotations, "DRAM genome annotated", version, params['workspace_name'],
                                              self.workspaceURL, genome_ref_dict)
