@@ -1,6 +1,14 @@
 # kb_DRAM release notes
 =========================================
 
+0.1.0
+-----
+* Addition of DRAM-v app
+* Deeper integration into KBase genome objects
+* Ready for release
+* Bugfixes
+
+
 0.0.2
 -----
 * Annotation with DRAM now generates genome objects
