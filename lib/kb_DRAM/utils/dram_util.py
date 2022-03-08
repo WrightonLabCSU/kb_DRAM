@@ -223,13 +223,25 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
 
         # this is because when annotating assemblies we rename genomes based on input name and _DRAM
         # TODO: turn '%s_DRAM' in an argument with desired replacement or None for no replacement
+        genome_name = None
+        if isinstance(fasta_name,float):
+            fasta_name = str(fasta_name)
         if fasta_name in genome_ref_dict:
             genome_name = fasta_name
         elif '%s_DRAM' % fasta_name in genome_ref_dict:
             genome_name = '%s_DRAM' % fasta_name
         else:
-            print(genome_ref_dict)
-            raise ValueError('Fasta name %s not found in genome_ref_dict with keys %s' %
+            #Deal with the possiblity that fasta_name was a float with trailing zeros
+            for i in range(0,10):
+                fasta_name += "0"
+                if fasta_name in genome_ref_dict:
+                    genome_name = fasta_name
+                    break
+                elif '%s_DRAM' % fasta_name in genome_ref_dict:
+                    genome_name = '%s_DRAM' % fasta_name
+                    break
+            if genome_name == None:
+                raise ValueError('Fasta name %s not found in genome_ref_dict with keys %s' %
                              (fasta_name, ', '.join(genome_ref_dict.keys())))
 
         genome_ref = genome_ref_dict[genome_name]
