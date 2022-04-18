@@ -46,9 +46,9 @@ class kb_DRAM:
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "0.0.2"
-    GIT_URL = "https://github.com/shafferm/kb_DRAM.git"
-    GIT_COMMIT_HASH = "6c91eb1cdbd74eec6efd105477c89b76f34cabd9"
+    VERSION = "0.1.1"
+    GIT_URL = "https://github.com/WrightonLabCSU/kb_DRAM.git"
+    GIT_COMMIT_HASH = "972d3605f0a234e5218aedc5d5ea8f32f9d7482b"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
