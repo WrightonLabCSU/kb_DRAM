@@ -1,6 +1,10 @@
 # kb_DRAM release notes
 =========================================
 
+0.1.1
+-----
+* Fix, numbered input bug
+
 0.1.0
 -----
 * Addition of DRAM-v app
