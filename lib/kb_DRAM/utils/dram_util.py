@@ -226,23 +226,32 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
         genome_name = None
         if isinstance(fasta_name,float):
             fasta_name = str(fasta_name)
-        if fasta_name in genome_ref_dict:
-            genome_name = fasta_name
-        elif '%s_DRAM' % fasta_name in genome_ref_dict:
-            genome_name = '%s_DRAM' % fasta_name
+        # genome_ref_dict = {"ap1.000", 'ap3.0000', 'ap1.', 'ap1.noe','ap1._DRAM'}
+        # fasta_name = "ap1."
+        likly_genome_name = [i for i in genome_ref_dict if re.fullmatch(f"{fasta_name}0*[_DRAM]?", i)]
+        if len(likly_genome_name) == 1:
+            genome_name = likly_genome_name[0]
+        elif len(likly_genome_name) > 1:
+            raise ValueError('Fasta name %s is ambiguous in genome_ref_dict with keys %s, note that names ending in 0s or \"_DRAM\" have these removed from the name' %
+                         (fasta_name, ', '.join(genome_ref_dict.keys())))
         else:
-            #Deal with the possiblity that fasta_name was a float with trailing zeros
-            for i in range(0,10):
-                fasta_name += "0"
-                if fasta_name in genome_ref_dict:
-                    genome_name = fasta_name
-                    break
-                elif '%s_DRAM' % fasta_name in genome_ref_dict:
-                    genome_name = '%s_DRAM' % fasta_name
-                    break
-            if genome_name == None:
-                raise ValueError('Fasta name %s not found in genome_ref_dict with keys %s' %
-                             (fasta_name, ', '.join(genome_ref_dict.keys())))
+            raise ValueError('Fasta name %s not found in genome_ref_dict with keys %s' %
+                         (fasta_name, ', '.join(genome_ref_dict.keys())))
+        #  if fasta_name in genome_ref_dict:
+        #      genome_name = fasta_name
+        #  elif '%s_DRAM' % fasta_name in genome_ref_dict:
+        #      genome_name = '%s_DRAM' % fasta_name
+        #  else:
+        #      #Deal with the possiblity that fasta_name was a float with trailing zeros
+
+        #      for i in range(0,10):
+        #          fasta_name += "0"
+        #          if fasta_name in genome_ref_dict:
+        #              genome_name = fasta_name
+        #              break
+        #          elif '%s_DRAM' % fasta_name in genome_ref_dict:
+        #              genome_name = '%s_DRAM' % fasta_name
+        #              break
 
         genome_ref = genome_ref_dict[genome_name]
         ontology_event = {

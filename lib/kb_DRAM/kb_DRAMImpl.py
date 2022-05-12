@@ -79,6 +79,8 @@ class kb_DRAM:
         # validate inputs
         if not isinstance(params['assembly_input_ref'], str) or not len(params['assembly_input_ref']):
             raise ValueError('Pass in a valid assembly reference string')
+        if not isinstance(params['assembly_output_ref'], str) or not len(params['assembly_output_ref']):
+            raise ValueError('Pass in a valid assembly reference string')
         if not isinstance(params['desc'], str) or not len(params['desc']):
             raise ValueError('Pass in a valid genomeSet description')
         if not isinstance(params['output_name'], str) or not len(params['output_name']):

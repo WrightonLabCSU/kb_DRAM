@@ -1,5 +1,5 @@
 FROM kbase/sdkbase2:python
-MAINTAINER michael.t.shaffer@colostate.edu
+MAINTAINER rory.flynn@colostate.edu
 # -----------------------------------------
 # In this section, you can install any system dependencies required
 # to run your App.  For instance, you could place an apt-get update or

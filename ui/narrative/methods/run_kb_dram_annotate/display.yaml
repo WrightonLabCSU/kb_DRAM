@@ -34,6 +34,11 @@ parameters :
             Assembly/assembly set to be annotated
         short-hint : |
             The contig collection(s) you want to annotate with DRAM
+    assembly_output_ref :
+        ui-name : |
+            Assembly/assembly set name for the output
+        short-hint : |
+            The annotated Assembly/assembly set will have this name
     is_metagenome :
         ui-name: |
             Is metagenome?

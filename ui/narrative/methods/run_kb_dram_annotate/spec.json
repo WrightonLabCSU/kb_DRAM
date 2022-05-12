@@ -9,10 +9,21 @@
         "input": null,
         "output": "no-display"
     },
-    "parameters": [ 
+    "parameters": [
         {
             "id": "assembly_input_ref",
             "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": [ "KBaseGenomeAnnotations.Assembly", "KBaseGenomes.ContigSet", "KBaseSets.AssemblySet" ]
+            }
+        },
+        {
+            "id": "assembly_output_ref",
+            "optional": true,
             "advanced": false,
             "allow_multiple": false,
             "default_values": [ "" ],
