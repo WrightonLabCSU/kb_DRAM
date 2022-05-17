@@ -1,15 +1,16 @@
 {
-    "ver": "0.0.2",
+    "ver": "0.0.3",
     "authors": [
-        "michael_shaffer"
+        "michael_shaffer",
+        "rory_flynn"
     ],
-    "contact": "",
+    "contact": "rory.flynn@colostate.edu",
     "categories": ["active", "annotation"],
     "widgets": {
         "input": null,
         "output": "no-display"
     },
-    "parameters": [ 
+    "parameters": [
         {
             "id": "genome_input_ref",
             "optional": false,
@@ -49,7 +50,7 @@
     "behavior": {
         "service-mapping": {
             "url": "",
-            "name": "kb_DRAM",
+            "name": "dram_beta",
             "method": "run_kb_dram_annotate_genome",
             "input_mapping": [
                 {

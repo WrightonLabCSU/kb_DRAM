@@ -1,7 +1,7 @@
-SERVICE = kb_dram
-SERVICE_CAPS = kb_DRAM
-SPEC_FILE = kb_DRAM.spec
-URL = https://kbase.us/services/kb_dram
+SERVICE = dram_beta
+SERVICE_CAPS = dram_beta
+SPEC_FILE = dram_beta.spec
+URL = https://kbase.us/services/dram_beta
 DIR = $(shell pwd)
 LIB_DIR = lib
 SCRIPTS_DIR = scripts

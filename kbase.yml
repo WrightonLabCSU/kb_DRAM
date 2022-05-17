@@ -1,5 +1,5 @@
 module-name:
-    kb_DRAM
+    dram_beta
 
 module-description:
     Annotate bacterial and archaeal (meta)genomes and viruses with DRAM.

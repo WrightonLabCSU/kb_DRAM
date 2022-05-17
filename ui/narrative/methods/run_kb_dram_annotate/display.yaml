@@ -6,6 +6,7 @@ name: Annotate and Distill Assemblies with DRAM
 tooltip: |
     Annotate your assembly with DRAM. Annotations will then be distilled to create an interactive functional summary per assembly.
 
+# TODO
 screenshots: []
 
 icon: DRAM_AppIcon_blue.png
@@ -34,11 +35,11 @@ parameters :
             Assembly/assembly set to be annotated
         short-hint : |
             The contig collection(s) you want to annotate with DRAM
-    assembly_output_ref :
-        ui-name : |
-            Assembly/assembly set name for the output
-        short-hint : |
-            The annotated Assembly/assembly set will have this name
+    output_name :
+        ui-name: |
+            Output GenomeSet Name
+        short-hint: |
+            Name for the Output GenomeSet Collection
     is_metagenome :
         ui-name: |
             Is metagenome?
@@ -79,11 +80,11 @@ parameters :
             Reverse search bit score threshold to assign a database hit in reciprocal best hit blast-style searches
         placeholder: |
             350
-    output_name :
+    output_suffix:
         ui-name: |
-            Output GenomeSet Name
+            Output Sufix Name
         short-hint: |
-            Name for the Output GenomeSet Collection
+            Name for the Output GenomeSet/Genome/AnnotatedMetaGenome Collection
 
 description : |
     <p>DRAM will annotate assemblies and provide summarization of the metabolisms each assembly is capable of. DRAM is most useful for annotating assebmly sets where the DRAM product can be used to compare the metabolic profiles of each assembly.</p>
@@ -94,11 +95,11 @@ publications :
     -
         display-text: |
             DRAM source code
-        link: https://github.com/shafferm/DRAM/
+        link: https://github.com/WrightonLabCSU/DRAM/
     -
         display-text: |
             DRAM documentation
-        link: https://github.com/shafferm/DRAM/wiki
+        link: https://github.com/WrightonLabCSU/DRAM/wiki
     -
         display-text: |
             DRAM publication
