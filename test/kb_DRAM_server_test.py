@@ -4,13 +4,15 @@ import time
 import unittest
 from configparser import ConfigParser
 
-from dram_beta.dram_betaImpl import dram_beta
-from dram_beta.dram_betaServer import MethodContext
-from dram_beta.authclient import KBaseAuth as _KBaseAuth
+from kb_DRAM.kb_DRAMImpl import kb_DRAM
+from kb_DRAM.kb_DRAMServer import MethodContext
+from kb_DRAM.authclient import KBaseAuth as _KBaseAuth
 
 from installed_clients.WorkspaceClient import Workspace
 from installed_clients.AssemblyUtilClient import AssemblyUtil
 
+KB_ASSEMBLY_INPUT_REF = '68245/4/1'
+KB_GENOME_INPUT_REF = '68245/4/1'
 
 class kb_DRAMTest(unittest.TestCase):
 
@@ -21,7 +23,7 @@ class kb_DRAMTest(unittest.TestCase):
         cls.cfg = {}
         config = ConfigParser()
         config.read(config_file)
-        for nameval in config.items('dram_beta'):
+        for nameval in config.items('kb_DRAM'):
             cls.cfg[nameval[0]] = nameval[1]
         # Getting username from Auth profile for token
         authServiceUrl = cls.cfg['auth-service-url']
@@ -33,14 +35,14 @@ class kb_DRAMTest(unittest.TestCase):
         cls.ctx.update({'token': token,
                         'user_id': user_id,
                         'provenance': [
-                            {'service': 'dram_beta',
+                            {'service': 'kb_DRAM',
                              'method': 'please_never_use_it_in_production',
                              'method_params': []
                              }],
                         'authenticated': 1})
         cls.wsURL = cls.cfg['workspace-url']
         cls.wsClient = Workspace(cls.wsURL)
-        cls.serviceImpl = dram_beta(cls.cfg)
+        cls.serviceImpl = kb_DRAM(cls.cfg)
         cls.scratch = cls.cfg['scratch']
         cls.callback_url = os.environ['SDK_CALLBACK_URL']
         suffix = int(time.time() * 1000)
@@ -61,10 +63,11 @@ class kb_DRAMTest(unittest.TestCase):
         # bad min length
         with self.assertRaises(ValueError):
             self.serviceImpl.run_kb_dram_annotate(self.ctx, {'workspace_name': self.wsName,
-                                                             'assembly_input_ref': '41343/4/1',
+                                                             'assembly_input_ref': KB_ASSEMBLY_INPUT_REF,
+                  'desc': 'No desc',
+                                                             'output_name': 'output',
                                                              'min_contig_size': -200})
 
-    # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
     def test_kb_dram_annotate_is_metagenome(self):
         # Prepare test objects in workspace if needed using
         # self.getWsClient().save_objects({'workspace': self.getWsName(),
@@ -75,17 +78,44 @@ class kb_DRAMTest(unittest.TestCase):
         #
         # Check returned data with
         # self.assertEqual(ret[...], ...) or other unittest methods
-        ref = "41343/4/1"
         params = {'workspace_name': self.wsName,
-                  'assembly_input_ref': ref,
+                  'assembly_input_ref': KB_ASSEMBLY_INPUT_REF,
+                  'desc': 'No desc',
+                  'bitscore': 60,
+                  'rbh_bitscore': 350,
+                  'output_name': 'output',
                   'min_contig_size': 1000,
+                  'trans_table': 11,
                   'is_metagenome': True
                   }
         ret = self.serviceImpl.run_kb_dram_annotate(self.ctx, params)
         self.assertTrue(len(ret[0]['report_name']))
         self.assertTrue(len(ret[0]['report_ref']))
 
-    # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
+    def test_kb_dram_annotate_is_metagenome_assembly(self):
+        # Prepare test objects in workspace if needed using
+        # self.getWsClient().save_objects({'workspace': self.getWsName(),
+        #                                  'objects': []})
+        #
+        # Run your method by
+        # ret = self.getImpl().your_method(self.getContext(), parameters...)
+        #
+        # Check returned data with
+        # self.assertEqual(ret[...], ...) or other unittest methods
+        params = {'workspace_name': self.wsName,
+                  'assembly_input_ref': KB_ASSEMBLY_INPUT_REF,
+                  'output_name': 'output',
+                  'desc': 'No desc',
+                  'min_contig_size': 1000,
+                  'trans_table': 11,
+                  'bitscore': 60,
+                  'rbh_bitscore': 350,
+                  'is_metagenome': True
+                  }
+        ret = self.serviceImpl.run_kb_dram_annotate(self.ctx, params)
+        self.assertTrue(len(ret[0]['report_name']))
+        self.assertTrue(len(ret[0]['report_ref']))
+
     def test_kb_dram_annotate_test(self):
         # Prepare test objects in workspace if needed using
         # self.getWsClient().save_objects({'workspace': self.getWsName(),
@@ -96,15 +126,17 @@ class kb_DRAMTest(unittest.TestCase):
         #
         # Check returned data with
         # self.assertEqual(ret[...], ...) or other unittest methods
-        ref = "41343/4/1"
         params = {'workspace_name': self.wsName,
-                  'assembly_input_ref': ref,
+                  'assembly_input_ref': KB_ASSEMBLY_INPUT_REF,
+                  'desc': 'No desc',
+                  'output_name': 'output',
+                  'bitscore': 60,
+                  'rbh_bitscore': 350,
                   'min_contig_size': 1000}
         ret = self.serviceImpl.run_kb_dram_annotate(self.ctx, params)
         self.assertTrue(len(ret[0]['report_name']))
         self.assertTrue(len(ret[0]['report_ref']))
 
-    # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
     def test_kb_dram_annotate_test(self):
         # Prepare test objects in workspace if needed using
         # self.getWsClient().save_objects({'workspace': self.getWsName(),
@@ -115,15 +147,27 @@ class kb_DRAMTest(unittest.TestCase):
         #
         # Check returned data with
         # self.assertEqual(ret[...], ...) or other unittest methods
-        ref = "41343/4/1"
         params = {'workspace_name': self.wsName,
-                  'assembly_input_ref': ref,
-                  'min_contig_size': 1000}
+                  'assembly_input_ref': KB_ASSEMBLY_INPUT_REF,
+                  'desc': 'No desc',
+                  'output_name': 'output',
+                  'min_contig_size': 1000,
+                  'trans_table': 11,
+                  'bitscore': 60,
+                  'rbh_bitscore': 350,
+                  'is_metagenome': False
+                  }
         ret = self.serviceImpl.run_kb_dram_annotate(self.ctx, params)
         self.assertTrue(len(ret[0]['report_name']))
         self.assertTrue(len(ret[0]['report_ref']))
 
     def test_what_is_fastas(self):
         assembly_util = AssemblyUtil(self.callback_url)
-        fastas = assembly_util.get_fastas({'ref_lst': ['41343/11/3']})
+        fastas = assembly_util.get_fastas({'ref_lst': [KB_ASSEMBLY_INPUT_REF]})
         print(fastas)
+'''
+import os
+os.system('kb-sdk test')
+os.system('kb-sdk compile')
+os.system('kb-sdk help')
+'''

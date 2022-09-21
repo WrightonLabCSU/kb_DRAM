@@ -1,5 +1,5 @@
 module-name:
-    dram_beta
+    kb_DRAM
 
 module-description:
     Annotate bacterial and archaeal (meta)genomes and viruses with DRAM.
@@ -8,10 +8,10 @@ service-language:
     python
 
 module-version:
-    0.1.1
+    0.1.2
 
 owners:
-    [michael_shaffer, rmflynn]
+    [rmflynn, michael_shaffer]
 
 data-version:
     0.0.3

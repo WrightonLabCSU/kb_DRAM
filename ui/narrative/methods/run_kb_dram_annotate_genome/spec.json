@@ -50,7 +50,7 @@
     "behavior": {
         "service-mapping": {
             "url": "",
-            "name": "dram_beta",
+            "name": "kb_DRAM",
             "method": "run_kb_dram_annotate_genome",
             "input_mapping": [
                 {
