@@ -1,6 +1,6 @@
 # kb_DRAM
 
-To use this web-based app in KBase, please follow this link [https://narrative.kbase.us/#catalog/modules/kb_DRAM] (https://narrative.kbase.us/%23catalog/modules/kb_DRAM)
+To use this web-based app in KBase, please follow this link [https://narrative.kbase.us/#catalog/modules/kb_DRAM](https://narrative.kbase.us/%23catalog/modules/kb_DRAM)
 
 No installations are necessary for users of the app. 
 
