@@ -10,7 +10,7 @@ Users will need to have the SDK installed to develop and test this module. [Lear
 
 You can also learn more about the apps implemented in this module from [KBase catalog page](https://narrative.kbase.us/#catalog/modules/kb_DRAM) or its [spec file]($module_name.spec).
 
-To contribute to the DRAM software, please see this link. 
+To contribute to the DRAM software, please see this [link](https://github.com/WrightonLabCSU/DRAM). 
 
 # Setup and test
 
