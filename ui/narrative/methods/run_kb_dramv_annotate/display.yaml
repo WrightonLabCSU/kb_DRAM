@@ -4,7 +4,7 @@
 name: Annotate and Distill Viral Assemblies with DRAM-v
 
 tooltip: |
-    Annotate your viral assembly with DRAM. Annotations will then be distilled to create an interactive functional summary per virus.
+    Annotate vMAGs with DRAM and distill resulting annotations to create an interactive auxiliary metabolic gene summary.
 
 screenshots: []
 
@@ -76,9 +76,9 @@ parameters :
             Name for the Output GenomeSet Collection
 
 description : |
-    <p>DRAM will annotate assemblies and provide summarization of the metabolisms each assembly is capable of. DRAM is most useful for annotating assebmly sets where the DRAM product can be used to compare the metabolic profiles of each assembly.</p>
+    <p>DRAM-v, or DRAM for vMAGs, will annotate vMAGs and predict potential auxiliary metabolic genes, through a set of rules defined in <a href="https://academic.oup.com/nar/article/48/16/8883/5884738">https://academic.oup.com/nar/article/48/16/8883/5884738</a>.</p>
 
-    <p>DRAM for MAGs works by annotating all genomes given with all databases used by DRAM. The user is given a tab delimited annotations file with all annotations from all databases for all genes in all genomes. Additionally the user is given a folder with genbank files for each genome, a gff file with all annotations across genomes as well as annotated nucleotide and amino acid fasta files of all genes. The results of annotation are distilled. This generates three files: 1. The genome statistics table which includes all statistics required by MIMAG, 2. the metabolism summary which gives gene counts of functional genes across a wide variety of metabolisms and 3. the product which is a heatmap showing coverage of modules, the coverage of electron transport chain components and the presence of selected metabolic functions.</p>
+    <p> DRAM for vMAGs works by annotating viral genomes with a set of databases curated to the task, and integrating additional input from Virsorter. Note that you must start with a metagenomic assembly object and run the VirSorter KBase app. DRAM-v is run using the viral genome files along with the lshock ID from the KBase VirSorter Summary. The user is then given a tab delimited annotations file with all annotations from all databases for all genes in all genomes, with data on known and potential Auxiliary Metabolic Genes (AMGs). Additionally, the user is given a folder with genbank files for each viral genome, a gff file with all annotations across all genomes, as well as annotated nucleotide and amino acid fasta files of all genes. The results of annotation are distilled. This generates three files: 1. The VMAG statistics which includes all statistics required by MIMAG, 2. The AMG summary which includes relevant statistics on potential AMG genes and 3. The product, which is an interactive heatmap showing potential AMGs for all vMAGs, the number of potential AMGs in each contig, and a heatmap of all possible <em>Distillate</em> categories to which each AMG (category 1–3, default) belongs.</p>
 
 publications :
     -

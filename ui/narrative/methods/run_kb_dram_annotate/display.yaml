@@ -4,7 +4,7 @@
 name: Annotate and Distill Assemblies with DRAM
 
 tooltip: |
-    Annotate your assembly with DRAM. Annotations will then be distilled to create an interactive functional summary per assembly.
+    Annotate your assemblies, isolate genomes, or MAGs with DRAM and distill resulting annotations to create an interactive functional summary per genome or assembly. <u>For KBase assembly objects.</u>
 
 screenshots: []
 
@@ -81,9 +81,9 @@ parameters :
             Name for the Output GenomeSet Collection
 
 description : |
-    <p>DRAM will annotate assemblies and provide summarization of the metabolisms each assembly is capable of. DRAM is most useful for annotating assebmly sets where the DRAM product can be used to compare the metabolic profiles of each assembly.</p>
+    <p>DRAM will predict coding sequences and annotate input microbial DNA sequences from assemblies, isolate genomes or MAGs (KBase assembly objects) and provide genome metabolic summaries. DRAM is most useful for annotating genome sets, where the DRAM product can be used to compare the metabolic profiles of each genome.</p>
 
-    <p>DRAM for MAGs works by annotating all genomes given with all databases used by DRAM. The user is given a tab delimited annotations file with all annotations from all databases for all genes in all genomes. Additionally the user is given a folder with genbank files for each genome, a gff file with all annotations across genomes as well as annotated nucleotide and amino acid fasta files of all genes. The results of annotation are distilled. This generates three files: 1. The genome statistics table which includes all statistics required by MIMAG, 2. the metabolism summary which gives gene counts of functional genes across a wide variety of metabolisms and 3. the product which is a heatmap showing coverage of modules, the coverage of electron transport chain components and the presence of selected metabolic functions.</p>
+    <p>DRAM for assemblies works by predicting coding sequences and annotating all genes given in a KBase Assembly object with a set of databases curated to the task. The user is given a tab delimited annotations file with all annotations from all databases for all genes. Additionally, the user is given a folder with annotated nucleotide and amino acid fasta files of all genes. The results of annotation are distilled to generate three files: 1. The genome statistics table, which includes all statistics required by MIMAG, 2. The metabolism summary, which gives gene counts of functional genes across a wide variety of metabolisms and 3. the product, an interactive heatmap showing coverage of modules, the coverage of electron transport chain components and the presence of selected metabolic functions.</p>
 
 publications :
     -
