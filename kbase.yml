@@ -4,7 +4,7 @@ module-name:
 module-description:
     If you have any difficulty using this app, email mborton@colostate.edu for help.
     
-    Visit the Tutorial <add link> to see detailed instructions on how to run this app in KBase, as well as being able to run the app for yourself.
+    Visit the Tutorial <add link> to see detailed instructions on how to run this app in KBase.
     
     kb_DRAM utilizes three different input file types:
     (1) For the annoation of microbial DNA sequences from assemblies, isolate genomes, or metagenome assembled genomes, use KBase assembly objects
