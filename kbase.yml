@@ -2,7 +2,14 @@ module-name:
     kb_DRAM
 
 module-description:
-    Annotate bacterial and archaeal (meta)genomes and viruses with DRAM.
+    If you have any difficulty using this app, email Rory.Flynn@colostate.edu for help.
+
+    Visit the Tutorial <add link> to see detailed instructions on how to run this app in KBase.
+
+    kb_DRAM utilizes three different input file types:
+    (1) For the annotation of microbial DNA sequences from assemblies, isolate genomes, or metagenome assembled genomes, use KBase assembly objects
+    (2) For the annotation of predicted coding sequences from microbial genomes, use KBase genome objects
+    (3) For the annotation of viral genomes identified form metagenomes using DRAM-v, use Ishock ID from the KBase VirSorter Summary
 
 service-language:
     python
