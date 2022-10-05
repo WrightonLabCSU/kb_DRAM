@@ -27,7 +27,7 @@ elif [ "${1}" = "init" ] ; then
   zenodo_get -w files_to_download.txt -r 4581775 # This is the deposition number for the databases dated 3/3/2021
   wget -i files_to_download.txt -nv
   ls
-  if md5sum -c md5sums.txt ; then
+  if md5sum -c md5sums.txt ; the
     DRAM-setup.py set_database_locations --kofam_hmm_loc kofam_profiles.hmm \
                                          --kofam_ko_list_loc kofam_ko_list.tsv \
                                          --pfam_db_loc pfam.mmspro \

@@ -25,8 +25,11 @@ RUN echo $(which conda) && \
 #    conda env update -n base --file environment.yaml
 #RUN pip install jsonrpcbase
 # install from pip
-RUN conda install -q pandas scikit-bio prodigal "mmseqs2!=10.6d92c" "hmmer!=3.3.1" "trnascan-se >=2" sqlalchemy barrnap "altair >=4" openpyxl networkx ruby parallel wget nose coverage pyyaml && \
-    pip install -q 'DRAM-bio>=1.2.3' jsonrpcbase
+RUN conda install -q pandas scikit-bio prodigal "mmseqs2!=10.6d92c" "hmmer!=3.3.1" "trnascan-se >=2" sqlalchemy barrnap "altair >=4" openpyxl networkx ruby parallel wget nose coverage pyyaml git && \
+    pip install -q 'DRAM-bio>=1.2.3' jsonrpcbase && \
+    git clone https://github.com/WrightonLabCSU/DRAM.git && \
+    cd DRAM && \
+    pip install .
 # install from github
 #RUN conda install -q pandas scikit-bio prodigal "mmseqs2!=10.6d92c" "hmmer!=3.3.1" "trnascan-se >=2" sqlalchemy barrnap "altair >=4" openpyxl networkx ruby parallel wget nose coverage pyyaml && \
 #    pip install -q jsonrpcbase && \
