@@ -2,17 +2,33 @@ module-name:
     kb_DRAM
 
 module-description:
-    <p>If you have any difficulty using this app, email Rory.Flynn@colostate.edu for help.</p>
-
-    <p>Visit the Tutorial <add link> to see detailed instructions on how to run this app in KBase.</p>
-
-    <p>b_DRAM utilizes three different input file types:<\p>
-
-    <p>(1) For the annotation of microbial DNA sequences from assemblies, isolate genomes, or metagenome assembled genomes, use KBase assembly objects<\p>
-
-    <p>(2) For the annotation of predicted coding sequences from microbial genomes, use KBase genome objects<\p>
-
-    <p>(3) For the annotation of viral genomes identified form metagenomes using DRAM-v, use Ishock ID from the KBase VirSorter Summary<\p>
+    <p>
+    If you have any difficulty using this app, email
+  Rory.Flynn@colostate.edu for help.</p>
+  <p>
+  </p>
+  <p>  <a href="https://narrative.kbase.us/narrative/127566">Visit the Tutorial</a> to see detailed instructions on how to run this app in KBase.</p>
+  <p>
+  </p>
+  <p>  kb_DRAM utilizes
+  three different input file types:</p>
+  <p>
+  </p>
+  <ol>
+          <li><p>      For the
+          annotation of microbial DNA sequences from assemblies, isolate
+          genomes, or metagenome assembled genomes, use KBase assembly objects</p>
+          <p>
+          </p>
+          <li><p>     For the
+          annotation of predicted coding sequences from microbial genomes, use
+          KBase genome objects</p>
+          <p>
+          </p>
+          <li><p>    For the
+          annotation of viral genomes identified form metagenomes using
+          DRAM-v, use Ishock ID from the KBase VirSorter Summary</p>
+  </ol>
 
 service-language:
     python
