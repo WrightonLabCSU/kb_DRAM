@@ -34,10 +34,10 @@ service-language:
     python
 
 module-version:
-    0.1.0
+    0.1.2
 
 owners:
-    [michael_shaffer, rmflynn]
+    [rmflynn, michael_shaffer]
 
 data-version:
     0.0.3

@@ -1,15 +1,16 @@
 {
-    "ver": "0.0.2",
+    "ver": "0.0.3",
     "authors": [
-        "michael_shaffer"
+        "michael_shaffer",
+        "rory_flynn"
     ],
-    "contact": "",
+    "contact": "rory.flynn@colostate.edu",
     "categories": ["active", "annotation"],
     "widgets": {
         "input": null,
         "output": "no-display"
     },
-    "parameters": [ 
+    "parameters": [
         {
             "id": "assembly_input_ref",
             "optional": false,
@@ -19,6 +20,18 @@
             "field_type": "text",
             "text_options": {
                 "valid_ws_types": [ "KBaseGenomeAnnotations.Assembly", "KBaseGenomes.ContigSet", "KBaseSets.AssemblySet" ]
+            }
+        },
+        {
+            "id": "output_name",
+            "optional": true,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": [ "KBaseSearch.GenomeSet", "KBaseGenomes.Genome", "KBaseSets.GenomeSet", "KBaseMetagenomes.AnnotatedMetagenomeAssembly"],
+		        "is_output_name": true
             }
         },
         {
@@ -91,15 +104,15 @@
             }
         },
         {
-            "id": "output_name",
-            "optional": false,
-            "advanced": false,
+            "id": "output_suffix",
+            "optional": true,
+            "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "" ],
+            "default_values": [ "DRAM" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": [ "KBaseSearch.GenomeSet", "KBaseSets.GenomeSet" ],
-		        "is_output_name": true
+                "valid_ws_types": [ "KBaseSearch.GenomeSet", "KBaseGenomes.Genome", "KBaseSets.GenomeSet", "KBaseMetagenomes.AnnotatedMetagenomeAssembly"],
+		"is_output_name": false
             }
         }
     ],
@@ -120,6 +133,9 @@
                     "target_property": "assembly_input_ref",
                     "target_type_transform": "resolved-ref"
                 },{
+                    "input_parameter": "output_name",
+                    "target_property": "output_name"
+                },{
                     "input_parameter": "is_metagenome",
                     "target_property": "is_metagenome"
                 },{
@@ -137,9 +153,6 @@
                 },{
                     "input_parameter": "rbh_bitscore",
                     "target_property": "rbh_bitscore"
-                },{
-                    "input_parameter": "output_name",
-                    "target_property": "output_name"
                 }
             ],
             "output_mapping": [

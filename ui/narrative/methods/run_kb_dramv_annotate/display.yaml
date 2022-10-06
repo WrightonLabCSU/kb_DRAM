@@ -34,6 +34,11 @@ parameters :
             Assembly/assembly set to be annotated
         short-hint : |
             The contig collection(s) you want to annotate with DRAM
+    output_name:
+        ui-name: |
+            Output GenomeSet Name
+        short-hint: |
+            Name for the Output GenomeSet Collection
     affi_contigs_shock_id:
         ui-name: |
             Shock id of VIRSorter_affi-contigs.tab from VirSorter
@@ -69,11 +74,6 @@ parameters :
             Reverse search bit score threshold to assign a database hit in reciprocal best hit blast-style searches
         placeholder: |
             350
-    output_name:
-        ui-name: |
-            Output GenomeSet Name
-        short-hint: |
-            Name for the Output GenomeSet Collection
 
 description : |
     <p>DRAM-v, or DRAM for vMAGs, will annotate vMAGs and predict potential auxiliary metabolic genes, through a set of rules defined in <a href="https://academic.oup.com/nar/article/48/16/8883/5884738">https://academic.oup.com/nar/article/48/16/8883/5884738</a>.</p>
@@ -84,11 +84,11 @@ publications :
     -
         display-text: |
             DRAM source code
-        link: https://github.com/shafferm/DRAM/
+        link: https://github.com/WrightonLabCSU/DRAM/
     -
         display-text: |
             DRAM documentation
-        link: https://github.com/shafferm/DRAM/wiki
+        link: https://github.com/WrightonLabCSU/DRAM/wiki
     -
         display-text: |
             DRAM publication

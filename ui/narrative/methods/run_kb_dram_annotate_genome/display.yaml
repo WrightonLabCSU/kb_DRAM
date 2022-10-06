@@ -58,11 +58,11 @@ publications :
     -
         display-text: |
             DRAM source code
-        link: https://github.com/shafferm/DRAM/
+        link: https://github.com/WrightonLabCSU/DRAM/
     -
         display-text: |
             DRAM documentation
-        link: https://github.com/shafferm/DRAM/wiki
+        link: https://github.com/WrightonLabCSU/DRAM/wiki
     -
         display-text: |
             DRAM publication

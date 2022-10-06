@@ -1,15 +1,16 @@
 {
-    "ver": "0.0.2",
+    "ver": "0.0.3",
     "authors": [
-        "michael_shaffer"
+        "michael_shaffer",
+        "rory_flynn"
     ],
-    "contact": "",
+    "contact": "rory.flynn@colostate.edu",
     "categories": ["active", "annotation"],
     "widgets": {
         "input": null,
         "output": "no-display"
     },
-    "parameters": [ 
+    "parameters": [
         {
             "id": "assembly_input_ref",
             "optional": false,
@@ -19,6 +20,18 @@
             "field_type": "text",
             "text_options": {
                 "valid_ws_types": [ "KBaseGenomeAnnotations.Assembly", "KBaseGenomes.ContigSet", "KBaseSets.AssemblySet" ]
+            }
+        },
+        {
+            "id": "output_name",
+            "optional": true,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": [ "KBaseSearch.GenomeSet", "KBaseSets.GenomeSet" ],
+		        "is_output_name": true
             }
         },
         {
@@ -98,6 +111,9 @@
                     "input_parameter": "assembly_input_ref",
                     "target_property": "assembly_input_ref",
                     "target_type_transform": "resolved-ref"
+                },{
+                    "input_parameter": "output_name",
+                    "target_property": "output_name"
                 },{
                     "input_parameter": "min_contig_size",
                     "target_property": "min_contig_size"

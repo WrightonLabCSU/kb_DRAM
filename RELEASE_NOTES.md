@@ -1,6 +1,12 @@
 # kb_DRAM release notes
 =========================================
 
+0.1.2
+-----
+* Simplify input finding
+* Add option to rename output
+* Apend \_DRAM to the output file by defalt
+
 0.1.1
 -----
 * Fix, numbered input bug
