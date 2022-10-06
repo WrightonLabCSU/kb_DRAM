@@ -24,14 +24,17 @@ RUN echo $(which conda) && \
 # install from pip
 #TODO add
 # install from github
-RUN conda install -q pandas scikit-bio prodigal "mmseqs2!=10.6d92c" "hmmer!=3.3.1" "trnascan-se >=2" sqlalchemy barrnap "altair >=4" openpyxl networkx ruby parallel wget nose coverage pyyaml git && \
-    pip install -q 'DRAM-bio>=1.2.3' jsonrpcbase && \
-    git clone https://github.com/WrightonLabCSU/DRAM.git && \
-    cd DRAM && \
-    pip install .
+RUN conda install -q pandas scikit-bio "scipy==1.8.1"
+RUN conda install -q pandas prodigal "mmseqs2!=10.6d92c" "hmmer!=3.3.1" "trnascan-se >=2" sqlalchemy barrnap "altair >=4" openpyxl networkx ruby parallel wget nose coverage pyyaml git
+RUN python -c "exec(\"from skbio.io import read as read_sequence\")"
+RUN pip install -q jsonrpcbase
+# try 2
+RUN git clone https://github.com/WrightonLabCSU/DRAM.git
+RUN pip install ./DRAM
 # -----------------------------------------
 
 COPY ./ /kb/module
+RUN ls /kb/module/
 RUN mkdir -p /kb/module/work
 RUN chmod -R a+rw /kb/module
 

@@ -3,31 +3,29 @@ module-name:
 
 module-description:
     <p>
-    If you have any difficulty using this app, email
-  Rory.Flynn@colostate.edu for help.</p>
+    If you have any difficulty using this app, email Rory.Flynn@colostate.edu for help.
+    </p>
   <p>
   </p>
   <p>  <a href="https://narrative.kbase.us/narrative/127566">Visit the Tutorial</a> to see detailed instructions on how to run this app in KBase.</p>
   <p>
   </p>
-  <p>  kb_DRAM utilizes
-  three different input file types:</p>
+  <p>  kb_DRAM utilizes three different input file types:</p>
   <p>
   </p>
   <ol>
-          <li><p>      For the
-          annotation of microbial DNA sequences from assemblies, isolate
-          genomes, or metagenome assembled genomes, use KBase assembly objects</p>
+          <li><p>
+          For the annotation of microbial DNA sequences from assemblies, isolate genomes, or assembled genomes, use assembly objects
+          </p>
           <p>
           </p>
-          <li><p>     For the
-          annotation of predicted coding sequences from microbial genomes, use
-          KBase genome objects</p>
+          <li><p>
+          For the annotation of predicted coding sequences from microbial genomes, use genome objects
+          </p>
           <p>
           </p>
-          <li><p>    For the
-          annotation of viral genomes identified form metagenomes using
-          DRAM-v, use Ishock ID from the KBase VirSorter Summary</p>
+          <li><p>
+          For the annotation of viral genomes identified form metagenomes using DRAM-v, use Ishock ID from the KBase VirSorter Summary</p>
   </ol>
 
 service-language:
@@ -37,7 +35,7 @@ module-version:
     0.1.2
 
 owners:
-    [rmflynn, michael_shaffer]
+    [Rory Flynn, michael_shaffer]
 
 data-version:
     0.0.3
