@@ -108,7 +108,7 @@
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "DRAM" ],
+            "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
             }
