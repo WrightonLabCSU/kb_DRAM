@@ -37,7 +37,6 @@ RUN echo $(cat ./DRAM/mag_annotator/__init__.py)
 # -----------------------------------------
 
 COPY ./ /kb/module
-RUN ls /kb/module/
 RUN mkdir -p /kb/module/work
 RUN chmod -R a+rw /kb/module
 

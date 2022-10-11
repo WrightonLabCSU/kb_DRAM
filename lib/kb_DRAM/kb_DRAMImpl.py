@@ -262,7 +262,7 @@ class kb_DRAM:
                                                              "console": [],
                                                              "invalid_msgs": [],
                                                              "residue_type": 'P',
-                                                             "feature_type": None,
+                                                             "feature_type": "genome",
                                                              "record_id_pattern": None,
                                                              "record_desc_pattern": None,
                                                              "case": None,
