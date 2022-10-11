@@ -25,7 +25,7 @@ from .utils.dram_util import get_annotation_files, get_distill_files, generate_g
     get_viral_distill_files
 from .utils.kbase_util import generate_product_report
 
-THREADS = 30
+THREADS = 7
 
 # TODO: Fix no pfam annotations bug
 #END_HEADER

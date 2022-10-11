@@ -111,8 +111,6 @@
             "default_values": [ "DRAM" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": [ "KBaseSearch.GenomeSet", "KBaseGenomes.Genome", "KBaseSets.GenomeSet", "KBaseMetagenomes.AnnotatedMetagenomeAssembly"],
-		"is_output_name": false
             }
         }
     ],
