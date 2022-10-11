@@ -3,6 +3,7 @@
 . /kb/deployment/user-env.sh
 
 PATH=/root/miniconda/bin:$PATH
+ZENODO_REF=7183884  # This is the deposition number for the databases dated October 6, 2022
 
 python ./scripts/prepare_deploy_cfg.py ./deploy.cfg ./work/config.properties
 
@@ -24,7 +25,7 @@ elif [ "${1}" = "init" ] ; then
   cd /data
   mkdir DRAM_databases
   cd DRAM_databases
-  zenodo_get -w files_to_download.txt -r 7154703  # This is the deposition number for the databases dated October 6, 2022
+  zenodo_get -w files_to_download.txt -r $ZENODO_REF
   # cat files_to_download.txt
   wget -c  https://zenodo.org/record/7154703/files/CONFIG.tar.gz -O - | tar -xz
   wget -i files_to_download.txt -nv
