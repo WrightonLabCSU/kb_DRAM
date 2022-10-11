@@ -30,7 +30,10 @@ RUN python -c "exec(\"from skbio.io import read as read_sequence\")"
 RUN pip install -q jsonrpcbase
 # try 2
 RUN git clone https://github.com/WrightonLabCSU/DRAM.git
+RUN cd DRAM && git pull
 RUN pip install ./DRAM
+RUN echo $(cat ./DRAM/)
+RUN echo $(cat ./DRAM/mag_annotator/__init__.py)
 # -----------------------------------------
 
 COPY ./ /kb/module

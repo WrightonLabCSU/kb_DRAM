@@ -22,35 +22,23 @@ elif [ "${1}" = "init" ] ; then
   # Could be this to setup?
   pip install -q zenodo_get
   cd /data
-  #tmp>mkdir DRAM_databases
+  mkdir DRAM_databases
   cd DRAM_databases
-  zenodo_get -w files_to_download.txt -r 4581775 # This is the deposition number for the databases dated 3/3/2021
-  #tmp>wget -i files_to_download.txt -nv
-  #tmp>if md5sum -c md5sums.txt ; then
-  DRAM-setup.py set_database_locations --kofam_hmm_loc kofam_profiles.hmm \
-                                       --kofam_ko_list_loc kofam_ko_list.tsv \
-                                       --pfam_db_loc pfam.mmspro \
-                                       --pfam_hmm_dat Pfam-A.hmm.dat.gz \
-                                       --dbcan_db_loc dbCAN-HMMdb-V9.txt \
-                                       --dbcan_fam_activities CAZyDB.07312019.fam-activities.txt \
-                                       --vogdb_db_loc vog_latest_hmms.txt \
-                                       --vog_annotations vog_annotations_latest.tsv.gz \
-                                       --viral_db_loc refseq_viral.20210303.mmsdb \
-                                       --peptidase_db_loc peptidases.20210303.mmsdb \
-                                       --description_db_loc /data/DRAM_databases/description_db.sqlite \
-                                       --genome_summary_form_loc genome_summary_form.20210303.tsv \
-                                       --module_step_form_loc module_step_form.20210303.tsv \
-                                       --etc_module_database_loc etc_mdoule_database.20210303.tsv \
-                                       --function_heatmap_form_loc function_heatmap_form.20210303.tsv \
-                                       --amg_database_loc amg_database.20210303.tsv
-  DRAM-setup.py export_config --output_file CONFIG
-  cd /data
-  touch __READY__
-  #tmp> else
-  #tmp>   echo "Init failed"
-  #tmp> fi
-  # or this?
-
+  zenodo_get -w files_to_download.txt -r 7154703  # This is the deposition number for the databases dated October 6, 2022
+  # cat files_to_download.txt
+  wget -c  https://zenodo.org/record/7154703/files/CONFIG.tar.gz -O - | tar -xz
+  wget -i files_to_download.txt -nv
+  if md5sum -c md5sums.txt ; then
+      for file in *.tar.gz; do tar xzvf "${file}" && rm -f "${file}"; done
+      # DRAM-setup.py set_database_locations
+      DRAM-setup.py mv_db_folder --old_config_file ./CONFIG
+      DRAM-setup.py export_config --output_file CONFIG
+      cd /data
+      touch __READY__
+  else
+    echo "Init failed"
+fi
+# or this?
 elif [ "${1}" = "bash" ] ; then
   bash
 elif [ "${1}" = "report" ] ; then
