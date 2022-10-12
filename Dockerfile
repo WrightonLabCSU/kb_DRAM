@@ -34,7 +34,6 @@ RUN cd DRAM && git pull
 RUN pip install ./DRAM
 RUN echo $(cat ./DRAM/)
 RUN echo $(cat ./DRAM/mag_annotator/__init__.py)
-RUN rm /data/__READY__
 # -----------------------------------------
 
 COPY ./ /kb/module
