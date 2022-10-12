@@ -256,17 +256,19 @@ class kb_DRAM:
         for genome_name, genome_ref in genome_ref_dict.items():
             # this makes the names match if you are doing a genome or genomeSet
             faa_file = '%s.faa' % genome_name
-            faa_object = object_to_file_utils.GenomeToFASTA({"genome_ref": genome_ref,
-                                                             "file": faa_file,
-                                                             "dir": genome_dir,
-                                                             "console": [],
-                                                             "invalid_msgs": [],
-                                                             "residue_type": 'P',
-                                                             "feature_type": "genome",
-                                                             "record_id_pattern": None,
-                                                             "record_desc_pattern": None,
-                                                             "case": None,
-                                                             "linewrap": None})
+            faa_object = object_to_file_utils.GenomeToFASTA({
+                "genome_ref": genome_ref,
+                "file": faa_file,
+                "dir": genome_dir,
+                "console": [],
+                "invalid_msgs": [],
+                'residue_type': 'protein',
+                'feature_type': 'CDS',
+                'record_id_pattern': '%%feature_id%%',
+                'record_desc_pattern': '[%%genome_id%%]',
+                'case': 'upper',
+                'linewrap': 50
+            })
             faa_locs.append(faa_object['fasta_file_path'])
 
         # annotate and distill with DRAM
