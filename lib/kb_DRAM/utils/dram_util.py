@@ -183,8 +183,8 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
         ec_terms = list()
         for gene, row in genome_annotations.iterrows():  # this is slow, could probably be an apply
             # get kos
-            if not pd.isna(row['kegg_id']):
-                kegg_terms = row['kegg_id'].split(',')
+            if not pd.isna(row['ko_id']):
+                kegg_terms = row['ko_id'].split(',')
                 ko_terms += kegg_terms
                 kegg_ontology_terms[gene] = [{'term': i} for i in kegg_terms]
             # get ECs
