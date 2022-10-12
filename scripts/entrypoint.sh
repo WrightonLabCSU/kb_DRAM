@@ -27,7 +27,6 @@ elif [ "${1}" = "init" ] ; then
   cd DRAM_databases
   zenodo_get -w files_to_download.txt -r $ZENODO_REF
   # cat files_to_download.txt
-  wget -c  https://zenodo.org/record/7154703/files/CONFIG.tar.gz -O - | tar -xz
   wget -i files_to_download.txt -nv
   if md5sum -c md5sums.txt ; then
       for file in *.tar.gz; do tar xzvf "${file}" && rm -f "${file}"; done
