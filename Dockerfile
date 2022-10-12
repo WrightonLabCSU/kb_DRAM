@@ -32,11 +32,10 @@ RUN pip install -q jsonrpcbase
 RUN git clone https://github.com/WrightonLabCSU/DRAM.git
 RUN cd DRAM && git pull
 RUN pip install ./DRAM
-RUN echo $(cat ./DRAM/)
-RUN echo $(cat ./DRAM/mag_annotator/__init__.py)
 # -----------------------------------------
 
 COPY ./ /kb/module
+
 RUN mkdir -p /kb/module/work
 RUN chmod -R a+rw /kb/module
 
