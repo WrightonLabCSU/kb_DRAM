@@ -164,7 +164,7 @@ def generate_genomes(annotations, genes_nucl_loc, genes_aa_loc, assembly_ref_dic
                   "reference_annotation": 0}
 
         genome_object = {"workspace": workspace,
-                         "name": '_'.join(fasta_name, dram_sufix),
+                         "name": '_'.join([fasta_name, dram_sufix]),
                          "data": genome,
                          "provenance": provenance}
         genome_objects.append(genome_object)
