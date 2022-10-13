@@ -223,17 +223,19 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
 
         # this is because when annotating assemblies we rename genomes based on input name and _DRAM
         # TODO: turn '%s_DRAM' in an argument with desired replacement or None for no replacement
-        genome_name = None
         if isinstance(fasta_name,float):
             fasta_name = str(fasta_name)
-        # genome_ref_dict = {"ap1.000", 'ap3.0000', 'ap1.', 'ap1.noe','ap1._DRAM'}
         # fasta_name = "ap1."
-        likly_genome_name = [i for i in genome_ref_dict if re.fullmatch(f"{fasta_name}0*[_DRAM]?", i)]
+        # genome_ref_dict = {"ap1.000", 'ap3.0000', 'ap1.', 'ap1.noe','ap1._DRAM'}
+        likly_genome_name = [i for i in genome_ref_dict
+                             if re.fullmatch(f"{fasta_name}0*", i) or re.fullmatch(f"{fasta_name}0*[_DRAM]?", i)]
         if len(likly_genome_name) == 1:
             genome_name = likly_genome_name[0]
         elif len(likly_genome_name) > 1:
-            raise ValueError('Fasta name %s is ambiguous in genome_ref_dict with keys %s, note that names ending in 0s or \"_DRAM\" have these removed from the name' %
-                         (fasta_name, ', '.join(genome_ref_dict.keys())))
+            raise ValueError(
+                f'Fasta name {fasta_name} is ambiguous in genome_ref_dict with'
+                f' keys {", ".join(genome_ref_dict.keys())}, note that names'
+                f' ending in 0s or \"_DRAM\" have these removed from the name')
         else:
             raise ValueError('Fasta name %s not found in genome_ref_dict with keys %s' %
                          (fasta_name, ', '.join(genome_ref_dict.keys())))
