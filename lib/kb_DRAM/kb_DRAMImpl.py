@@ -25,7 +25,7 @@ from .utils.dram_util import get_annotation_files, get_distill_files, generate_g
     get_viral_distill_files
 from .utils.kbase_util import generate_product_report
 
-THREADS = 7
+THREADS = 30
 
 # TODO: Fix no pfam annotations bug
 #END_HEADER
@@ -322,8 +322,6 @@ class kb_DRAM:
             raise ValueError('Pass in a valid genomeSet output name')
         # if not isinstance(params['assembly_output_ref'], str) or not len(params['assembly_output_ref']):
         #     raise ValueError('Pass in a valid assembly reference string')
-        if not isinstance(params['desc'], str) or not len(params['desc']):
-            raise ValueError('Pass in a valid genomeSet description')
         if not isinstance(params['min_contig_size'], int) or (params['min_contig_size'] < 0):
             raise ValueError('Min contig size must be a non-negative integer')
         warnings.filterwarnings("ignore")
