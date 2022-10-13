@@ -320,8 +320,6 @@ class kb_DRAM:
         # this may not be apropriate
         if not isinstance(params['output_name'], str):
             raise ValueError('Pass in a valid genomeSet output name')
-        # if not isinstance(params['assembly_output_ref'], str) or not len(params['assembly_output_ref']):
-        #     raise ValueError('Pass in a valid assembly reference string')
         if not isinstance(params['min_contig_size'], int) or (params['min_contig_size'] < 0):
             raise ValueError('Min contig size must be a non-negative integer')
         warnings.filterwarnings("ignore")
