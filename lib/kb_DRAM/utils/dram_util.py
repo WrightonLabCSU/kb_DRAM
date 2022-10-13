@@ -227,8 +227,10 @@ def add_ontology_terms(annotations, description, version, workspace, workspace_u
             fasta_name = str(fasta_name)
         # fasta_name = "ap1."
         # genome_ref_dict = {"ap1.000", 'ap3.0000', 'ap1.', 'ap1.noe','ap1._DRAM'}
+        # fasta_name = "Paceibacter_normanii_SCGC_AAA255-P19"
+        # genome_ref_dict = {"Paceibacter_normanii_SCGC_AAA255-P19_DRAM"}
         likly_genome_name = [i for i in genome_ref_dict
-                             if re.fullmatch(f"{fasta_name}0*", i) or re.fullmatch(f"{fasta_name}0*[_DRAM]?", i)]
+                             if re.match(f"^{fasta_name}0?[_DRAM]?", i)]
         if len(likly_genome_name) == 1:
             genome_name = likly_genome_name[0]
         elif len(likly_genome_name) > 1:
