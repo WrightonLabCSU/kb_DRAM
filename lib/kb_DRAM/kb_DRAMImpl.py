@@ -144,7 +144,7 @@ class kb_DRAM:
             genome_objects = generate_genomes(annotations, output_files['genes_fna']['path'],
                                               output_files['genes_faa']['path'], assembly_ref_dict, assemblies,
                                               params["workspace_name"], ctx.provenance())
-            if len(genome_object) == 1:
+            if len(genome_objects) == 1:
                 pass #TODO, just return a kbase genome
             genome_ref_dict = dict()
             genome_set_elements = dict()
