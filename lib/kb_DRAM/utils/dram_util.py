@@ -155,7 +155,7 @@ def generate_genomes(annotations, genes_nucl_loc, genes_aa_loc, assembly_ref_dic
                   "scientific_name": scientific_name,
                   "domain": domain,
                   "genetic_code": 0,  # might be able to get this from prodigal calls
-                  "assembly_ref": '_'.join([assembly_ref, dram_sufix]), # Added this just to double check things don't get overwritten
+                  "assembly_ref": assembly_ref  # Added this just to double check things don't get overwritten
                   "cdss": cdss,
                   "mrnas": mrnas,
                   "source": "DRAM annotation pipeline",

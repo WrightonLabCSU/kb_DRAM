@@ -174,11 +174,10 @@ class kb_DRAM:
             provenance[0]['method'] = 'KButil_Batch_Create_GenomeSet'
             output_genomeSet_obj = {'description': params['desc'],
                                     'elements': genome_set_elements}
-            # if len(params['output_name']):
-            #     output_genomeSet_name = params['output_name']
-            # else:
-            #     output_genomeSet_name = params['assembly_input_ref'] + "_DRAM"
-            output_genomeSet_name = params['output_name']
+            if len(params['output_name']):
+                output_genomeSet_name = params['output_name']
+            else:
+                output_genomeSet_name = params['assembly_input_ref'] + "_DRAM"
             new_obj_info = wsClient.save_objects({'workspace': params['workspace_name'],
                                                   'objects': [{'type': 'KBaseSearch.GenomeSet',
                                                                'data': output_genomeSet_obj,
