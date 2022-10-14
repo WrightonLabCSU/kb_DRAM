@@ -29,7 +29,7 @@ RUN conda install -q pandas prodigal "mmseqs2!=10.6d92c" "hmmer!=3.3.1" "trnasca
 RUN python -c "exec(\"from skbio.io import read as read_sequence\")"
 RUN pip install -q jsonrpcbase
 # try 2
-RUN echo "Update DRAM 1"
+RUN echo "Update DRAM 2"
 RUN git clone https://github.com/WrightonLabCSU/DRAM.git
 RUN cd DRAM && git pull
 RUN pip install ./DRAM
