@@ -29,16 +29,7 @@ RUN conda install -q pandas prodigal "mmseqs2!=10.6d92c" "hmmer!=3.3.1" "trnasca
 RUN python -c "exec(\"from skbio.io import read as read_sequence\")"
 RUN pip install -q jsonrpcbase
 # try 2
-RRUN conda install -q pandas scikit-bio "scipy==1.8.1"
-  RUN conda install -q pandas prodigal "mmseqs2!=10.6d92c" "hmmer!=3.3.1" "trnascan-se >=2" sqlalchemy barrnap "altair >=4" openpyxl networkx ruby parallel wget nose coverage pyyaml git
-  RUN python -c "exec(\"from skbio.io import read as read_sequence\")"
-  RUN pip install -q jsonrpcbase
-  # try 2
-  RUN echo "Update DRAM 2"
-  RUN git clone https://github.com/WrightonLabCSU/DRAM.git
-  RUN cd DRAM && git pull
-  RUN pip install ./DRAM
-UN echo "Update DRAM 2"
+RUN echo "Update DRAM 3"
 RUN git clone https://github.com/WrightonLabCSU/DRAM.git
 RUN cd DRAM && git pull
 RUN pip install ./DRAM
