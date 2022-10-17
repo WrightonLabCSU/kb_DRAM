@@ -17,7 +17,7 @@ from mag_annotator.utils import remove_suffix
 from installed_clients.WorkspaceClient import Workspace as workspaceService
 from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.GenomeFileUtilClient import GenomeFileUtil
-from installed_clients.annotation_ontology_apiServiceClient import annotation_ontology_api
+from installed_clients.cb_annotation_ontology_apiClient import cb_annotation_ontology_api
 from installed_clients.KBaseDataObjectToFileUtilsClient import KBaseDataObjectToFileUtils
 from installed_clients.DataFileUtilClient import DataFileUtil
 
@@ -157,7 +157,8 @@ class kb_DRAM:
                 genome_ref_dict[genome_object["name"]] = genome_ref
 
             # add ontology terms
-            anno_api = annotation_ontology_api(service_ver="beta")
+            anno_api = cb_annotation_ontology_api(self.callback_url)
+            
             ontology_events = add_ontology_terms(annotations, params['desc'], version, params['workspace_name'],
                                                  self.workspaceURL, genome_ref_dict)
             [anno_api.add_annotation_ontology_events(i) for i in ontology_events]
@@ -283,7 +284,7 @@ class kb_DRAM:
 
         # add ontology terms
         annotations = pd.read_csv(output_files['annotations']['path'], sep='\t', index_col=0, dtype={'fasta': str})
-        anno_api = annotation_ontology_api(service_ver="beta")
+        anno_api = cb_annotation_ontology_api(self.callback_url)
         ontology_events = add_ontology_terms(annotations, "DRAM genome annotated", version, params['workspace_name'],
                                              self.workspaceURL, genome_ref_dict)
         annotation_events = [anno_api.add_annotation_ontology_events(i) for i in ontology_events]
