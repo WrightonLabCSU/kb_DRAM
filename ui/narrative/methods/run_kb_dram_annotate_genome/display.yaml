@@ -4,7 +4,7 @@
 name: Annotate and Distill Genomes with DRAM
 
 tooltip: |
-    Annotate MAGs with DRAM and distill resulting annotations to create an interactive functional summary per genome. <u>For KBase genome objects.</u>
+    Annotate MAGs with DRAM and distill resulting annotations to create an interactive functional summary per genome. Use for KBase genome objects.
 
 screenshots: []
 
