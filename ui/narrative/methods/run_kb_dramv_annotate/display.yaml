@@ -4,7 +4,7 @@
 name: Annotate and Distill Viral Assemblies with DRAM-v
 
 tooltip: |
-    Annotate vMAGs with DRAM and distill resulting annotations to create an interactive auxiliary metabolic gene summary. Use with the VirSorter1 KBase app.
+    Annotate vMAGs with DRAM and distill resulting annotations to create an interactive auxiliary metabolic gene summary. Use with the VirSorter KBase app.
 
 screenshots: []
 
