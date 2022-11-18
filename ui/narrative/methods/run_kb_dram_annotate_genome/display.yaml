@@ -65,5 +65,9 @@ publications :
         link: https://github.com/WrightonLabCSU/DRAM/wiki
     -
         display-text: |
+            DRAM Tutorial
+        link: https://narrative.kbase.us/narrative/129480
+    -
+        display-text: |
             DRAM publication
         link: https://academic.oup.com/nar/article/48/16/8883/5884738
