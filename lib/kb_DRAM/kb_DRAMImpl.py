@@ -158,7 +158,7 @@ class kb_DRAM:
 
             # add ontology terms
             anno_api = cb_annotation_ontology_api(self.callback_url)
-            
+
             ontology_events = add_ontology_terms(annotations, params['desc'], version, params['workspace_name'],
                                                  self.workspaceURL, genome_ref_dict)
             [anno_api.add_annotation_ontology_events(i) for i in ontology_events]
