@@ -4,7 +4,7 @@
 name: Annotate and Distill Assemblies with DRAM
 
 tooltip: |
-    Annotate your assemblies, isolate genomes, or MAGs with DRAM and distill resulting annotations to create an interactive functional summary per genome or assembly. <u>For KBase assembly objects.</u>
+    Annotate your assemblies, isolate genomes, or MAGs with DRAM and distill resulting annotations to create an interactive functional summary per genome or assembly. For KBase assembly objects.
 
 # TODO
 screenshots: []
