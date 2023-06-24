@@ -35,7 +35,7 @@ module-version:
     0.1.2
 
 owners:
-    [rmflynn, michael_shaffer]
+    [rwoyda, rmflynn, michael_shaffer]
 
 data-version:
     0.0.5
